@@ -155,6 +155,7 @@ def member_page():
             """)
 
 
+# hm
 # The Admin page requires an 'Admin' role.
 @app.route('/admin')
 @roles_required('Admin')  # Use of @roles_required decorator
