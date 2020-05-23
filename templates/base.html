@@ -2,53 +2,50 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <!-- Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
 
-  <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
 </head>
 
 <body>
-    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">tCon</a>
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">Bot Control</a>
 
-      <form action="search" method="post" id="search">
-  <input class="form-control form-control-dark w-100" name="phrase" id="phrase" type="text" placeholder="Search" aria-label="Search"
-  data-toggle="modal" data-target="#exampleModal">
-      </form>
-  <ul class="navbar-nav px-3">
-    <li class="nav-item text-nowrap">
-      <a class="nav-link" >Documents</a>
-    </li>
-  </ul>
-  </nav>
-
-    <!-- Button trigger modal -->
-    <br>
-    <br>
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link">Username</a>
+        </li>
+    </ul>
 
 
+</nav>
 
-  {% for message in get_flashed_messages() %}
-  <div class="container text-center">
+<!-- Button trigger modal -->
+<br>
+<br>
+
+
+{% for message in get_flashed_messages() %}
+<div class="container text-center">
     <div class="p-3 mb-2 bg-danger text-white">{{ message }}</div>
-  </div>
-  <br>
-  {% endfor %}
+</div>
+<br>
+{% endfor %}
 
 
-  {% block main %}{% endblock %}
+{% block main %}{% endblock %}
 
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="{{ url_for('static', filename='jquery-3.3.1.slim.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='popper.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{{ url_for('static', filename='jquery-3.3.1.slim.min.js') }}"></script>
+<script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
 
 </body>
 
