@@ -17,7 +17,7 @@ class ConfigClass(object):
     SECRET_KEY = config['Security']['secret_key']
 
     # Flask-SQLAlchemy settings
-    SQLALCHEMY_DATABASE_URI = config['DB']['db_uri']  # File-based SQL database
+    SQLALCHEMY_DATABASE_URI = config['DB']['db_file']  # File-based SQL database
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # Avoids SQLAlchemy warning
 
     # Flask-Mail SMTP server settings
