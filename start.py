@@ -30,7 +30,10 @@ class ConfigClass(object):
     MAIL_DEFAULT_SENDER = '"Bot Control" <noreply@example.com>'
 
     # Flask-User settings
-    USER_APP_NAME = "Bot Control 2020"  # Shown in and email templates and page footers
+    USER_APP_NAME = "Bot Control"  # Shown in and email templates and page footers
+    USER_APP_VERSION="1.01"
+    USER_COPYRIGHT_YEAR="2020"
+    USER_CORPORATION_NAME="BotGeeks"
     USER_ENABLE_EMAIL = True  # Enable email authentication
     USER_ENABLE_USERNAME = False  # Disable username authentication
     USER_EMAIL_SENDER_NAME = USER_APP_NAME
@@ -116,8 +119,9 @@ if not User.query.filter(User.email == 'admin@example.com').first():
 @app.route('/')
 def home_page():
     return render_template_string("""
-            {% extends "flask_user_layout.html" %}
+            {% extends "base.html" %}
             {% block content %}
+            
                 <h2>{%trans%}Home page{%endtrans%}</h2>
                 <p><a href={{ url_for('user.register') }}>{%trans%}Register{%endtrans%}</a></p>
                 <p><a href={{ url_for('user.login') }}>{%trans%}Sign in{%endtrans%}</a></p>
@@ -138,7 +142,7 @@ def home_page():
 @login_required  # Use of @login_required decorator
 def member_page():
     return render_template_string("""
-            {% extends "flask_user_layout.html" %}
+            {% extends "base.html" %}
             {% block content %}
                 <h2>{%trans%}Members page{%endtrans%}</h2>
                 <p><a href={{ url_for('user.register') }}>{%trans%}Register{%endtrans%}</a></p>
