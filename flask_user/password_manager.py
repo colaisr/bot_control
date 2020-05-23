@@ -33,6 +33,7 @@ class PasswordManager(object):
             schemes=self.user_manager.USER_PASSLIB_CRYPTCONTEXT_SCHEMES,
             **self.user_manager.USER_PASSLIB_CRYPTCONTEXT_KEYWORDS)
 
+
     def hash_password(self, password):
         """Hash plaintext ``password`` using the ``password_hash`` specified in the constructor.
 
@@ -48,6 +49,7 @@ class PasswordManager(object):
         password_hash = self.password_crypt_context.hash(password)
 
         return password_hash
+
 
     def verify_password(self, password, password_hash):
         """Verify plaintext ``password`` against ``hashed password``.

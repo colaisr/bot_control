@@ -1,6 +1,5 @@
 from .utils import utils_prepare_user
 
-
 # Make sure that uncovered lines are covered
 def test_misc(app):
     um = app.user_manager

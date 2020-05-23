@@ -118,7 +118,7 @@ class DynamoDbAdapter(DbAdapterInterface):
         # pdb.set_trace()
         self.db.engine.delete_key(object)  # , userid='abc123', id='1')
         print('dynamo.delete_object(%s)' % object)
-        # self.db.session.delete(object)
+        #self.db.session.delete(object)
 
     def commit(self):
         """This method does nothing for DynamoDbAdapter.
@@ -127,6 +127,7 @@ class DynamoDbAdapter(DbAdapterInterface):
         print('dynamo.commit()')
         # self.db.engine.sync()
         # self.db.session.commit()
+
 
     # Database management methods
     # ---------------------------

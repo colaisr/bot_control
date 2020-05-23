@@ -69,6 +69,7 @@ class SQLDbAdapter(DbAdapterInterface):
         # Execute query
         return query.all()
 
+
     def find_first_object(self, ObjectClass, **kwargs):
         """ Retrieve the first object of type ``ObjectClass``,
         matching the specified filters in ``**kwargs`` -- case sensitive.

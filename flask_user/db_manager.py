@@ -275,3 +275,4 @@ class DBManager(object):
         .. warning:: ALL DATA WILL BE LOST. Use only for automated testing.
         """
         return self.db_adapter.drop_all_tables()
+

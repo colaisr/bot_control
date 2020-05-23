@@ -79,7 +79,6 @@ def roles_accepted(*role_names):
     | Calls unauthorized_view() when the user does not have the required roles.
     | Calls the decorated view otherwise.
     """
-
     # convert the list to a list containing that list.
     # Because roles_required(a, b) requires A AND B
     # while roles_required([a, b]) requires A OR B
@@ -126,7 +125,6 @@ def roles_required(*role_names):
     | Calls unauthorized_view() when the user does not have the required roles.
     | Calls the decorated view otherwise.
     """
-
     def wrapper(view_function):
 
         @wraps(view_function)  # Tells debuggers that is is a function wrapper
@@ -150,6 +148,7 @@ def roles_required(*role_names):
         return decorator
 
     return wrapper
+
 
 
 def allow_unconfirmed_email(view_function):

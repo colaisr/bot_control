@@ -52,7 +52,6 @@ def test_login_view(app, client):
     um.USER_ENABLE_EMAIL = True
     client.post_valid_form(url, email=user.email, password='Password1')
 
-
 def test_change_password_view(app, client):
     user = utils_prepare_user(app)
 
@@ -79,7 +78,6 @@ def test_change_password_view(app, client):
     user.password = old_password_hash
     app.db.session.commit()
 
-
 def test_change_username_view(app, client):
     user = utils_prepare_user(app)
 
@@ -103,7 +101,6 @@ def test_change_username_view(app, client):
     # Verify operations
     assert user.username == 'username2'
 
-
 def test_confirm_email_view(app, client):
     user = utils_prepare_user(app)
     user.email_confirmed_at = None
@@ -112,6 +109,7 @@ def test_confirm_email_view(app, client):
     um.USER_ENABLE_REGISTER = True
     um.USER_ENABLE_EMAIL = True
     um.USER_ENABLE_CONFIRM_EMAIL = True
+
 
     # Generate confirmation token for user 1
     confirmation_token = um.generate_token(user.id)
@@ -134,7 +132,6 @@ def test_confirm_email_view(app, client):
     # Restore
     pass
 
-
 def test_edit_user_profile(app, client):
     user = utils_prepare_user(app)
 
@@ -153,7 +150,6 @@ def test_edit_user_profile(app, client):
     # Verify operations
     assert user.first_name == 'Firstname2'
     assert user.last_name == 'Lastname2'
-
 
 def test_email_action_view(app, client):
     user = utils_prepare_user(app)
@@ -203,7 +199,6 @@ def test_email_action_view(app, client):
     um.USER_ENABLE_MULTIPLE_EMAILS = False
     db_manager.UserEmailClass = None
 
-
 def test_forgot_password_view(app, client):
     user = utils_prepare_user(app)
 
@@ -217,7 +212,6 @@ def test_forgot_password_view(app, client):
 
     # POST
     client.post_valid_form(url, email=user.email)
-
 
 def test_invite_user_view(app, client):
     user = utils_prepare_user(app)
@@ -241,7 +235,6 @@ def test_invite_user_view(app, client):
     UserInvitation = db_manager.UserInvitationClass
     user_invitation = db_adapter.find_first_object(UserInvitation, email='inviteduser@example.com')
     assert user_invitation
-
 
 def test_register_view(app, client):
     user = utils_prepare_user(app)
@@ -296,7 +289,6 @@ def test_register_view(app, client):
     url = url_for('user.register', reg_next='/')
     client.post_valid_form(url, email='register3@example.com', password='Password1')
 
-
 def test_resend_email_confirmation_view(app, client):
     user = utils_prepare_user(app)
 
@@ -311,7 +303,6 @@ def test_resend_email_confirmation_view(app, client):
 
     # POST
     client.post_valid_form(url, email=user.email)
-
 
 def test_reset_password_view(app, client):
     user = utils_prepare_user(app)

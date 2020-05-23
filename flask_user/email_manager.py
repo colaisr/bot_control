@@ -34,6 +34,7 @@ class EmailManager(object):
         if '@' not in self.sender_email:
             raise ConfigError('Config setting USER_EMAIL_SENDER_EMAIL is not a valid email address.')
 
+
     def send_confirm_email_email(self, user, user_email):
         """Send the 'email confirmation' email."""
 

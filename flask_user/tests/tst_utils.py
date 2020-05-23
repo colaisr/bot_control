@@ -19,11 +19,9 @@ def response_has_string(response, string):
     # hence the use of 'str.encode(string)'
     return response.data.find(str.encode(string)) >= 0
 
-
 # Checks to see if response.data contains the string 'has-error'.
 def response_has_errors(response):
     return response_has_string(response, 'has-error') or response_has_string(response, 'alert-danger')
-
 
 # Checks to see if response.data contains no 'has-error' strings
 def response_has_no_errors(response):
@@ -32,12 +30,10 @@ def response_has_no_errors(response):
         print(response.data)
     return not has_errors
 
-
 class TstClient(object):
     """
     Utility class for tests
     """
-
     def __init__(self, client, db):
         self.client = client
         self.db = db
@@ -98,3 +94,4 @@ class TstClient(object):
         url = url_for('user.logout')
         response = self.client.get(url, follow_redirects=True)
         assert response.status_code == 200
+

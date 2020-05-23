@@ -66,7 +66,7 @@ def session(db, request):
     request.addfinalizer(teardown)
     return session
 
-
 @pytest.fixture(scope='session')
 def client(app, db, request):
     return TstClient(app.test_client(), db)
+

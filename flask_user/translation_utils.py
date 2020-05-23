@@ -20,14 +20,11 @@ try:
 except ImportError:
     domain_translations = None
 
-
 def gettext(string, **variables):
     return domain_translations.gettext(string, **variables) if domain_translations else string % variables
 
-
 def lazy_gettext(string, **variables):
     return domain_translations.lazy_gettext(string, **variables) if domain_translations else string % variables
-
 
 def get_language_codes():
     language_codes = []
@@ -37,7 +34,6 @@ def get_language_codes():
             continue
         language_codes.append(folder)
     return language_codes
-
 
 def init_translations(babel):
     if babel:

@@ -1,7 +1,6 @@
 """This module defines UserManager settings and their defaults.
 """
 
-
 # Author: Ling Thio <ling.thio@gmail.com>
 # Copyright (c) 2013 Ling Thio
 
@@ -15,6 +14,7 @@ class UserManager__Settings(object):
 
         Feature settings
     """
+
 
     #: | Allow users to login and register with an email address
     USER_ENABLE_EMAIL = True
@@ -56,6 +56,7 @@ class UserManager__Settings(object):
     USER_ENABLE_REMEMBER_ME = True
 
     USER_ENABLE_AUTH0 = False
+
 
     #: The application name displayed in email templates and page template footers.
     USER_APP_NAME = 'USER_APP_NAME'

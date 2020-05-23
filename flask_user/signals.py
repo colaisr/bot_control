@@ -44,3 +44,4 @@ user_reset_password = _signals.signal('user.user_reset_password')
 
 # Signal sent just after a user sent an invitation  # TODO: Not yet implemented
 user_sent_invitation = _signals.signal('user.user_sent_invitation')
+

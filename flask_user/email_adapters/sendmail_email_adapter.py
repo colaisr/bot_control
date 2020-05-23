@@ -15,7 +15,6 @@ from flask_user.email_adapters import EmailAdapterInterface
 
 class SendmailEmailAdapter(EmailAdapterInterface):
     """ Implements the EmailAdapter interface to send emails with sendmail using Flask-Sendmail."""
-
     def __init__(self, app, sender_email=None, sender_name=None):
         """Check config settings and setup Flask-Sendemail.
 

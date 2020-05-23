@@ -205,6 +205,7 @@ class UserManager(UserManager__Settings, UserManager__Utils, UserManager__Views)
         # Configure a list of URLs to route to their corresponding view method.
         self._add_url_routes(app)
 
+
     def customize(self, app):
         """ Override this method to customize properties.
 

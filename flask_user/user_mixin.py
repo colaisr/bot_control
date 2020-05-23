@@ -5,7 +5,6 @@ This Mixin adds required methods to User data-model.
 from flask import current_app
 from flask_login import UserMixin as FlaskLoginUserMixin
 
-
 class UserMixin(FlaskLoginUserMixin):
     """ This class adds required methods to the User data-model.
 
@@ -45,6 +44,7 @@ class UserMixin(FlaskLoginUserMixin):
         # Verify password_ends_with
         token_is_valid = False
         if data_items:
+
             # Load user by User ID
             user_id = data_items[0]
             password_ends_with = data_items[1]
@@ -100,3 +100,4 @@ class UserMixin(FlaskLoginUserMixin):
 
         # All requirements have been met: return True
         return True
+

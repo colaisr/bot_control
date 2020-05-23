@@ -6,7 +6,6 @@
 
 from __future__ import print_function
 
-
 class DbAdapterInterface(object):
     """ Define the DbAdapter interface to manage objects in various databases.
 
@@ -95,3 +94,4 @@ class DbAdapterInterface(object):
         .. warning:: ALL DATA WILL BE LOST. Use only for automated testing.
         """
         raise NotImplementedError
+

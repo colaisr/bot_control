@@ -20,7 +20,6 @@ from flask_user.email_adapters import EmailAdapterInterface
 
 class SMTPEmailAdapter(EmailAdapterInterface):
     """ Implements the EmailAdapter interface to send emails with SMTP using Flask-Mail."""
-
     def __init__(self, app):
         """Check config settings and setup Flask-Mail.
 
@@ -71,3 +70,4 @@ class SMTPEmailAdapter(EmailAdapterInterface):
                 raise EmailError('SMTP Connection error: Check your MAIL_SERVER and MAIL_PORT settings.')
             except smtplib.SMTPAuthenticationError:
                 raise EmailError('SMTP Authentication error: Check your MAIL_USERNAME and MAIL_PASSWORD settings.')
+

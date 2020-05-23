@@ -6,14 +6,13 @@ invalid_usernames = (
     'with space',
     'with&symbol',
     "with'symbol",
-)
+    )
 invalid_passwords = (
     'Abcd1',  # too short
     'ABCabc',  # no digits
     'ABC123',  # no lower case letters
     'abc123',  # no upper case letters
 )
-
 
 def test_invalid_register(app, client):
     um = app.user_manager
@@ -81,6 +80,7 @@ def test_invalid_register(app, client):
     # Test non-matching passwords
     client.post_invalid_form(url, 'Password and Retype Password did not match',
                              username=username, email=email, password='Password1', retype_password='Password9')
+
 
 
 def test_invalid_login(app, client):

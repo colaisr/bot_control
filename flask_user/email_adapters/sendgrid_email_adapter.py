@@ -13,10 +13,8 @@ from flask_user.email_adapters import EmailAdapterInterface
 
 SENDGRID_IMPORT_ERROR_MESSAGE = 'The sendgrid package is missing. Install sendgrid with "pip install sendgrid".'
 
-
 class SendgridEmailAdapter(EmailAdapterInterface):
     """ Implements the EmailAdapter interface to send emails with SendGrid Web API v3 using sendgrid-python."""
-
     def __init__(self, app):
         """Check config settings and setup SendGrid Web API v3.
 
@@ -71,3 +69,4 @@ class SendgridEmailAdapter(EmailAdapterInterface):
                 print(e)
                 print(e.body)
                 raise
+

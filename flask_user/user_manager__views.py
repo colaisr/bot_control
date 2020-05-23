@@ -5,7 +5,6 @@
 # Copyright (c) 2013 Ling Thio
 
 from datetime import datetime
-
 try:
     from urllib.parse import quote, unquote  # Python 3
 except ImportError:
@@ -125,6 +124,7 @@ class UserManager__Views(object):
         self.prepare_domain_translations()
         return render_template(self.USER_CHANGE_PASSWORD_TEMPLATE, form=form)
 
+
     @login_required
     def change_username_view(self):
         """ Prompt for new username and old password and change the user's username."""
@@ -158,6 +158,7 @@ class UserManager__Views(object):
         # Render form
         self.prepare_domain_translations()
         return render_template(self.USER_CHANGE_USERNAME_TEMPLATE, form=form)
+
 
     def confirm_email_view(self, token):
         """ Verify email confirmation token and activate the user account."""
@@ -193,6 +194,7 @@ class UserManager__Views(object):
             return self._do_login_user(user, safe_next_url)  # auto-login
         else:
             return redirect(url_for('user.login') + '?next=' + quote(safe_next_url))  # redirect to login page
+
 
     @login_required
     def edit_user_profile_view(self):
@@ -255,6 +257,7 @@ class UserManager__Views(object):
             return self.unauthorized_view()
 
         return redirect(url_for('user.manage_emails'))
+
 
     def forgot_password_view(self):
         """Prompt for email and send reset password email."""
@@ -355,6 +358,7 @@ class UserManager__Views(object):
 
         self.prepare_domain_translations()
         return render_template(self.USER_INVITE_USER_TEMPLATE, form=invite_user_form)
+
 
     def login_view(self):
         """Prepare and process the login form."""
@@ -517,6 +521,7 @@ class UserManager__Views(object):
                                form=register_form,
                                login_form=login_form,
                                register_form=register_form)
+
 
     def resend_email_confirmation_view(self):
         """Prompt for email and re-send email conformation email."""

@@ -33,7 +33,6 @@ LEGACY_ERROR = \
           Flask-User==0.6.{X}
     """
 
-
 class DbAdapter(object):
     """This is mock Flask-User v0.6 class
     to warn the developer that they are using v0.6 API calls
@@ -43,7 +42,6 @@ class DbAdapter(object):
     def __init__(self, db, UserClass, UserAuthClass=None, UserEmailClass=None, UserProfileClass=None,
                  UserInvitationClass=None):
         raise Exception(LEGACY_ERROR)
-
 
 class SQLAlchemyAdapter(DbAdapter):
     """This is mock Flask-User v0.6 class

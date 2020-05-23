@@ -14,7 +14,6 @@ ORM_type = 'SQLAlchemy'  # SQLAlchemy  or MongoEngine
 # Setup Flask
 app = Flask(__name__)
 
-
 # Use a Class-based config to avoid needing a 2nd file
 # os.getenv() enables configuration through OS environment variables
 class ConfigClass(object):
@@ -53,7 +52,6 @@ class ConfigClass(object):
     USER_SHOW_USERNAME_EMAIL_DOES_NOT_EXIST = False
     USER_PASSWORD_HASH = 'bcrypt'
 
-
 # Read app config from class
 app.config.from_object(__name__ + '.ConfigClass')
 
@@ -87,7 +85,6 @@ if ORM_type == 'SQLAlchemy':
         roles = db.relationship('Role', secondary='user_roles',
                                 backref=db.backref('users', lazy='dynamic'))
 
-
     # Define UserEmail DataModel.
     class UserEmail(db.Model):
         __tablename__ = 'user_emails'
@@ -100,7 +97,6 @@ if ORM_type == 'SQLAlchemy':
         email_confirmed_at = db.Column(db.DateTime())
         is_primary = db.Column(db.Boolean(), nullable=False, default=False)
 
-
     class UserInvitation(db.Model):
         __tablename__ = 'user_invitations'
         id = db.Column(db.Integer, primary_key=True)
@@ -111,13 +107,11 @@ if ORM_type == 'SQLAlchemy':
         # token used for registration page to identify user registering
         token = db.Column(db.String(100), nullable=False, server_default='')
 
-
     # Define the Role data-model
     class Role(db.Model):
         __tablename__ = 'roles'
         id = db.Column(db.Integer(), primary_key=True)
         name = db.Column(db.String(50), unique=True)
-
 
     # Define the UserRoles data-model
     class UserRoles(db.Model):
@@ -126,16 +120,17 @@ if ORM_type == 'SQLAlchemy':
         user_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
         role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
 
+
 if ORM_type == 'MongoEngine':
     # Initialize Flask-MongoEngine, using MONGODB_SETTINGS setting
     from flask_mongoengine import MongoEngine
 
     db = MongoEngine(app)
 
-
     # Define the User document.
     # NB: Make sure to add flask_user UserMixin !!!
     class User(db.Document, UserMixin):
+
         # User authentication information
         username = db.StringField(default='')
         email = db.StringField(default='')

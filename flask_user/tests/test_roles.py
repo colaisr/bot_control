@@ -7,6 +7,7 @@ from flask_user import login_required, roles_accepted, roles_required, allow_unc
 
 
 def test_decorators(app, request):
+
     # Setup view functions with decorators
     # ------------------------------------
 
@@ -126,3 +127,4 @@ def test_decorators(app, request):
         assert roles_required_without() == 'view'
 
         logout_user()
+
