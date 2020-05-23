@@ -131,7 +131,7 @@ def home_page():
 
 # @app.route('/')
 # def home():
-#     return render_template('home.html')
+#     retdurn render_template('home.html')
 
 # The Members page is only accessible to authenticated users
 @app.route('/members')
