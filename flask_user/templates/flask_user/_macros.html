@@ -2,7 +2,7 @@
 <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
     {% if field.type != 'HiddenField' and label_visible %}
     {% if not label %}{% set label=field.label.text %}{% endif %}
-    <label class="control-label" for="{{ field.id }}">{{ label|safe }}</label>
+    <label for="{{ field.id }}" class="control-label">{{ label|safe }}</label>
     {% endif %}
     {{ field(class_='form-control', **kwargs) }}
     {% if field.errors %}
@@ -26,8 +26,8 @@
 {% for value, label, checked in field.iter_choices() %}
 <div class="radio">
     <label>
-        <input %} %} checked checked{%endif id="{{ field.id }}" if name="{{ field.id }}" type="radio"
-               value="{{ value }}" {%>
+        <input type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}" {% if checked %} checked{%
+               endif %}>
         {{ label }}
     </label>
 </div>
@@ -37,8 +37,8 @@
 {% macro render_submit_field(field, label=None, tabindex=None) -%}
 {% if not label %}{% set label=field.label.text %}{% endif %}
 {#
-<button class="form-control btn btn-default btn-primary" type="submit">{{label}}</button>#}
-<input %} %}tabindex="{{ tabindex }}" class="btn btn-default btn-primary"
-       endif if tabindex type="submit" value="{{label}}" {% {%
+<button type="submit" class="form-control btn btn-default btn-primary">{{label}}</button>#}
+<input type="submit" class="btn btn-default btn-primary" value="{{label}}"
+       {% if tabindex %}tabindex="{{ tabindex }}" {% endif %}
 >
 {%- endmacro %}
