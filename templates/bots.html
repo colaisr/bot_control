@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='bots.css') }}">
+{% endblock %}
+
+{% block main %}
+
+
+<div class="container-fluid">
+    <br>
+    <br>
+    <br>
+    <div class="alert alert-primary" hidden id="mbUploading" role="alert">
+        Creating a new Bot
+    </div>
+
+
+    <h1>My Bots</h1>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal text-center">Upload document</h4>
+        </div>
+        <div class="card-body">
+            <form id="newBot" action="createbot" method="post" enctype="multipart/form-data">
+                <label for="botname">Name</label>
+                <input type="text" class="form-control" name="botname" id="botname" required>
+                <br>
+                <button class="btn btn-primary btn-lg btn-block" type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <tr>
+                <th>File</th>
+                <th>Date uploaded</th>
+                <th>actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if bots %}
+
+            {% for key, value in bots.items() %}
+            <tr>
+                <td>
+                    <a href="{{value['location']}}">
+                        {% if '.pdf' in value['location'] %}
+                        <embed src="{{value['location']}}" width="100px" height="120px"/>
+
+                        {% endif %}
+                        <p>{{ key }}</p>
+
+                    </a>
+                    <p>{{value['location']}}</p>
+                </td>
+                <td>{{value['uploadedAt']}}</td>
+                <td>
+                    <form name="fname" action="/removeDocument" method="POST">
+                        <input type="hidden" name="filename" value="{{ key }}"/>
+                        <input type="submit" value="delete">
+                    </form>
+                    <a id="downloadingUrl" href="/getdocument/{{ key }}" download="">
+                        <button>Download!</button>
+                    </a>
+
+
+                </td>
+            </tr>
+            {% endfor %}
+
+            {% endif %}
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+
+<script>
+
+  function notifyU(event)
+   {
+        document.getElementById('mbUploading').removeAttribute("hidden");
+   }
+const formU = document.getElementById('fUpload');
+formU.addEventListener('submit', notifyU);
+
+</script>
+
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='home.js') }}"></script>
+{% endblock %}
