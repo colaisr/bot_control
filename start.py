@@ -98,20 +98,16 @@ class UserBots(db.Model):
     bot_id = db.Column(db.Integer(), db.ForeignKey('bots.id', ondelete='CASCADE'))
 
 
-class Bot(db.Model, UserMixin):
+class Bot(db.Model):
     __tablename__ = 'bots'
     id = db.Column(db.Integer, primary_key=True)
-    running = db.Column('is_active', db.Boolean(), nullable=False, server_default='1')
+    is_running = db.Column(db.Boolean(), nullable=False, server_default='0')
 
-    # User authentication information. The collation='NOCASE' is required
-    # to search case insensitively when USER_IFIND_MODE is 'nocase_collation'.
     name = db.Column(db.String(255, collation='NOCASE'), nullable=False, server_default='')
-    email_confirmed_at = db.Column(db.DateTime())
-    password = db.Column(db.String(255), nullable=False, server_default='')
+    api_key = db.Column(db.String(255, collation='NOCASE'), nullable=False, server_default='')
+    calendar_id = db.Column(db.String(255, collation='NOCASE'), nullable=False, server_default='')
+    created_at = db.Column(db.DateTime())
 
-    # User information
-    first_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
-    last_name = db.Column(db.String(100, collation='NOCASE'), nullable=False, server_default='')
 
 
 # Setup Flask-User and specify the User data-model
@@ -146,6 +142,8 @@ if not User.query.filter(User.email == 'admin@example.com').first():
 # The Home page is accessible to anyone
 @app.route('/')
 def home_page():
+    # return render_template('home.html')
+
     user = current_user
     if user.is_authenticated:
         return redirect(url_for('bots_page'))
@@ -168,8 +166,10 @@ def create_bot():
     bot_name = request.form['botname']
 
     bot = Bot(
-        name=bot_name,
-
+        name=request.form['botname'],
+        api_key=request.form['api_key'],
+        calendar_id=request.form['googlecalendar_id'],
+        created_at=datetime.datetime.now()
     )
     user_in_db = User.query.filter(User.id == user_id).first()
     user_in_db.bots.append(bot)

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='bots.css') }}">
+<link href="{{ url_for('static', filename='bots.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block main %}
@@ -22,11 +22,20 @@
             <h4 class="my-0 font-weight-normal text-center">Upload document</h4>
         </div>
         <div class="card-body">
-            <form id="newBot" action="createbot" method="post" enctype="multipart/form-data">
+            <form action="createbot" enctype="multipart/form-data" id="newBot" method="post">
+
                 <label for="botname">Name</label>
-                <input type="text" class="form-control" name="botname" id="botname" required>
+                <input class="form-control" id="botname" name="botname" required type="text">
+
+                <label for="api_key">API key</label>
+                <input class="form-control" id="api_key" name="api_key" type="text">
+
+                <label for="googlecalendar_id">Calendar ID</label>
+                <input class="form-control" id="googlecalendar_id" name="googlecalendar_id" type="text">
+
+
                 <br>
-                <button class="btn btn-primary btn-lg btn-block" type="submit">Upload</button>
+                <button class="btn btn-primary btn-lg btn-block" type="submit">Create</button>
             </form>
         </div>
     </div>
@@ -34,37 +43,37 @@
         <table class="table table-striped table-sm">
             <thead>
             <tr>
-                <th>File</th>
-                <th>Date uploaded</th>
-                <th>actions</th>
+                <th>Name</th>
+                <th>Created</th>
+                <th>API Key</th>
+                <th>Calendar ID</th>
+                <th>Running</th>
+                <th>Actions</th>
+
+
             </tr>
             </thead>
             <tbody>
             {% if bots %}
 
-            {% for key, value in bots.items() %}
+            {% for bot in bots %}
             <tr>
                 <td>
-                    <a href="{{value['location']}}">
-                        {% if '.pdf' in value['location'] %}
-                        <embed src="{{value['location']}}" width="100px" height="120px"/>
-
-                        {% endif %}
-                        <p>{{ key }}</p>
-
-                    </a>
-                    <p>{{value['location']}}</p>
+                    <p>{{bot.name}}</p>
                 </td>
-                <td>{{value['uploadedAt']}}</td>
                 <td>
-                    <form name="fname" action="/removeDocument" method="POST">
-                        <input type="hidden" name="filename" value="{{ key }}"/>
-                        <input type="submit" value="delete">
-                    </form>
-                    <a id="downloadingUrl" href="/getdocument/{{ key }}" download="">
-                        <button>Download!</button>
-                    </a>
-
+                    <p>{{bot.created_at.strftime("%d/%m/%Y, %H:%M:%S")}}</p>
+                </td>
+                <td>
+                    <p>{{bot.api_key}}</p>
+                </td>
+                <td>
+                    <p>{{bot.calendar_id}}</p>
+                </td>
+                <td>
+                    <p>{{bot.is_running}}</p>
+                </td>
+                <td>
 
                 </td>
             </tr>
@@ -86,6 +95,9 @@
    }
 const formU = document.getElementById('fUpload');
 formU.addEventListener('submit', notifyU);
+
+
+
 
 </script>
 
