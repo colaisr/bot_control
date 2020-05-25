@@ -12,6 +12,7 @@ from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
+import bot_tele
 from flask_user import UserMixin, UserManager, login_required, roles_required
 
 
@@ -215,6 +216,20 @@ def edit_bot(botId):
     else:
         return 'Error loading #{id}'.format(id=botId)
 
+
+@app.route('/startbot/<botId>', methods=['GET', 'POST'])
+@login_required
+def start_bot(botId):
+    bot_in_db = Bot.query.filter(Bot.id == botId).first()
+    if bot_in_db:
+
+        bot1 = bot_tele.Bot(bot_in_db.api_key)
+
+        bot1.start()
+        running = bot1.is_running
+        return redirect(url_for('bots_page'))
+    else:
+        return 'Error starting #{id}'.format(id=botId)
 
 @app.route('/createbot', methods=['POST'])
 @login_required

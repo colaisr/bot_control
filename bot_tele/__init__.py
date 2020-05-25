@@ -10,6 +10,21 @@ from bot_calendar import set_event, update_schedule_for_date
 from bot_db import update_stat
 
 
+class StoppableThread(threading.Thread):
+    """Thread class with a stop() method. The thread itself has to check
+    regularly for the stopped() condition."""
+
+    def __init__(self, *args, **kwargs):
+        super(StoppableThread, self).__init__(*args, **kwargs)
+        self._stop_event = threading.Event()
+
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
+
+
 class Order:
     def __init__(self, name):
         self.name = name
@@ -29,6 +44,9 @@ class Bot:
         self.SLOT_SIZE = interval
         self.UPDATE_CALENDAR = update
         self.OWNER_ID = owner_id
+        self.is_running = False
+        self.thread_native_id = 0
+        self.thread = None
 
         # Handle '/iammaster command
         @self.bot.message_handler(commands=['iammaster'])
@@ -277,8 +295,14 @@ class Bot:
         return markup
 
     def start(self):
-        x = threading.Thread(name=self.bot.token, target=self.bot.polling, )
-        x.start()
+        self.thread = StoppableThread(name=self.bot.token, target=self.bot.polling, )
+        self.thread.start()
+        self.is_running = True
+
+    def stop(self):
+
+        self.thread.stop()
+        self.is_running = True
 
 
 if __name__ == '__main__':
