@@ -5,8 +5,12 @@ from flask import Flask, render_template, render_template_string, request, url_f
 from flask_babelex import Babel
 from flask_login import current_user
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
 # Class-based application configuration
 from werkzeug.utils import redirect
+from wtforms import StringField, SubmitField, IntegerField
+from wtforms.validators import DataRequired
+from wtforms.widgets import HiddenInput
 
 from flask_user import UserMixin, UserManager, login_required, roles_required
 
@@ -109,7 +113,6 @@ class Bot(db.Model):
     created_at = db.Column(db.DateTime())
 
 
-
 # Setup Flask-User and specify the User data-model
 user_manager = UserManager(app, db, User)
 
@@ -142,8 +145,6 @@ if not User.query.filter(User.email == 'admin@example.com').first():
 # The Home page is accessible to anyone
 @app.route('/')
 def home_page():
-    # return render_template('home.html')
-
     user = current_user
     if user.is_authenticated:
         return redirect(url_for('bots_page'))
@@ -151,8 +152,20 @@ def home_page():
         return render_template('home.html')
 
 
+class BotCreateForm(FlaskForm):
+    name = StringField('Name', [DataRequired()])
+    api_key = StringField('api_key')
+    calendar_id = StringField('calendar_id')
+    submit = SubmitField('Submit')
+
+
+class BotUpdateForm(BotCreateForm):
+    id = IntegerField(widget=HiddenInput())
+
+
 # The Bots page showing the bots per user
 @app.route('/bots')
+@login_required
 def bots_page():
     user_id = current_user.id
     user_in_db = User.query.filter(User.id == user_id).first()
@@ -160,7 +173,51 @@ def bots_page():
     return render_template('bots.html', bots=bots)
 
 
+@app.route('/createbotform', methods=('GET', 'POST'))
+@login_required
+def register_bot():
+    form = BotCreateForm()
+    r = form.validate_on_submit()
+    if r:
+        user_id = current_user.id
+
+        bot = Bot(
+            name=form.name.data,
+            api_key=form.api_key.data,
+            calendar_id=form.calendar_id.data,
+            created_at=datetime.datetime.now()
+        )
+        user_in_db = User.query.filter(User.id == user_id).first()
+        user_in_db.bots.append(bot)
+        db.session.add(bot)
+        db.session.commit()
+
+        return redirect(url_for('bots_page'))
+    return render_template('bot_create_form.html', form=form)
+
+
+@app.route('/editbot/<botId>', methods=['GET', 'POST'])
+@login_required
+def edit_bot(botId):
+    bot_in_db = Bot.query.filter(Bot.id == botId).first()
+    if bot_in_db:
+
+        form = BotUpdateForm(obj=bot_in_db)
+        r = form.validate_on_submit()
+        if r:
+            form.populate_obj(bot_in_db)
+
+            db.session.commit()
+
+            return redirect(url_for('bots_page'))
+        else:
+            return render_template('bot_update_form.html', form=form, BotId=bot_in_db.id)
+    else:
+        return 'Error loading #{id}'.format(id=botId)
+
+
 @app.route('/createbot', methods=['POST'])
+@login_required
 def create_bot():
     user_id = current_user.id
     bot_name = request.form['botname']

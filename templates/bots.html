@@ -74,7 +74,9 @@
                     <p>{{bot.is_running}}</p>
                 </td>
                 <td>
-
+                    <a href="/editbot/{{ bot.id }}" id="editbot">
+                        <button>Edit</button>
+                    </a>
                 </td>
             </tr>
             {% endfor %}
@@ -95,6 +97,7 @@
    }
 const formU = document.getElementById('fUpload');
 formU.addEventListener('submit', notifyU);
+
 
 
 

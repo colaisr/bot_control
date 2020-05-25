@@ -1,0 +1,10 @@
+<div class="formwrapper">
+    <h2 class="title">Contact</h2>
+    <form method="POST" action="/createbotform">
+        <div class="form-field">{{ form.name.label }} {{ form.name(size=20) }}</div>
+        <div class="form-field">{{ form.api_key.label }} {{ form.api_key }}</div>
+        <div class="form-field">{{ form.calendar_id.label }} {{ form.calendar_id }}</div>
+        {{ form.submit }}
+        {{ form.hidden_tag() }}
+    </form>
+</div>
