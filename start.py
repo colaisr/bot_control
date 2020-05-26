@@ -56,6 +56,8 @@ babel = Babel(app)
 # Initialize Flask-SQLAlchemy
 db = SQLAlchemy(app)
 
+ALL_RUNNING_BOTS = {}
+
 
 # Define the User data-model.
 # NB: Make sure to add flask_user UserMixin !!!
@@ -222,14 +224,29 @@ def edit_bot(botId):
 def start_bot(botId):
     bot_in_db = Bot.query.filter(Bot.id == botId).first()
     if bot_in_db:
+        global ALL_RUNNING_BOTS
+        ALL_RUNNING_BOTS[str(bot_in_db.id)] = bot_tele.Bot(bot_in_db.api_key)
+        ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
 
-        bot1 = bot_tele.Bot(bot_in_db.api_key)
-
-        bot1.start()
-        running = bot1.is_running
         return redirect(url_for('bots_page'))
     else:
         return 'Error starting #{id}'.format(id=botId)
+
+
+@app.route('/stopbot/<botId>', methods=['GET', 'POST'])
+@login_required
+def stop_bot(botId):
+    global ALL_RUNNING_BOTS
+
+    if botId in ALL_RUNNING_BOTS:
+
+        ALL_RUNNING_BOTS[botId].stop()
+        ALL_RUNNING_BOTS[botId] = None
+
+        return redirect(url_for('bots_page'))
+    else:
+        return 'Error stopping #{id}'.format(id=botId)
+
 
 @app.route('/createbot', methods=['POST'])
 @login_required

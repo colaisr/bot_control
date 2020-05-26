@@ -44,8 +44,6 @@ class Bot:
         self.SLOT_SIZE = interval
         self.UPDATE_CALENDAR = update
         self.OWNER_ID = owner_id
-        self.is_running = False
-        self.thread_native_id = 0
         self.thread = None
 
         # Handle '/iammaster command
@@ -294,15 +292,14 @@ class Bot:
 
         return markup
 
+
     def start(self):
-        self.thread = StoppableThread(name=self.bot.token, target=self.bot.polling, )
+
+        self.thread = threading.Thread(name=self.bot.token, target=self.bot.polling)
         self.thread.start()
-        self.is_running = True
 
     def stop(self):
-
-        self.thread.stop()
-        self.is_running = True
+        self.bot.stop_bot()
 
 
 if __name__ == '__main__':

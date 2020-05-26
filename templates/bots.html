@@ -80,6 +80,9 @@
                     <a href="/startbot/{{ bot.id }}" id="startbot">
                         <button>Start</button>
                     </a>
+                    <a href="/stopbot/{{ bot.id }}" id="stopbot">
+                        <button>Stop</button>
+                    </a>
                 </td>
             </tr>
             {% endfor %}
@@ -100,6 +103,7 @@
    }
 const formU = document.getElementById('fUpload');
 formU.addEventListener('submit', notifyU);
+
 
 
 
