@@ -4,7 +4,7 @@ from _datetime import datetime
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-DATABASE = config['DB']['db_file']
+DATABASE = "scheduler_db.sqlite"
 
 
 def orders_table_exist(c):

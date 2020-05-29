@@ -225,7 +225,7 @@ def start_bot(botId):
     bot_in_db = Bot.query.filter(Bot.id == botId).first()
     if bot_in_db:
         global ALL_RUNNING_BOTS
-        ALL_RUNNING_BOTS[str(bot_in_db.id)] = bot_tele.Bot(bot_in_db.api_key)
+        ALL_RUNNING_BOTS[str(bot_in_db.id)] = bot_tele.Bot(bot_in_db.api_key, update=True)
         ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
 
         return redirect(url_for('bots_page'))
@@ -258,7 +258,8 @@ def create_bot():
         name=request.form['botname'],
         api_key=request.form['api_key'],
         calendar_id=request.form['googlecalendar_id'],
-        created_at=datetime.datetime.now()
+        created_at=datetime.datetime.now(),
+
     )
     user_in_db = User.query.filter(User.id == user_id).first()
     user_in_db.bots.append(bot)

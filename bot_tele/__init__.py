@@ -10,21 +10,6 @@ from bot_calendar import set_event, update_schedule_for_date
 from bot_db import update_stat
 
 
-class StoppableThread(threading.Thread):
-    """Thread class with a stop() method. The thread itself has to check
-    regularly for the stopped() condition."""
-
-    def __init__(self, *args, **kwargs):
-        super(StoppableThread, self).__init__(*args, **kwargs)
-        self._stop_event = threading.Event()
-
-    def stop(self):
-        self._stop_event.set()
-
-    def stopped(self):
-        return self._stop_event.is_set()
-
-
 class Order:
     def __init__(self, name):
         self.name = name
@@ -129,7 +114,7 @@ class Bot:
             elif call.data == "tomorrow":
                 order.date = datetime.date.today() + datetime.timedelta(days=1)
                 self.bot.answer_callback_query(call.id, "Tomorrow selected")
-                markup = generate_hours()
+                markup = self.generate_hours()
             markup = self.add_reset(markup)
             self.bot.send_message(chat_id, "איזה שעה ?", reply_markup=markup)
             # update_stat(order, call.from_user)
@@ -220,7 +205,7 @@ class Bot:
             except Exception as e:
                 print(e)
 
-    def add_reset(markup):
+    def add_reset(self, markup):
         new_row = []
         new_row.append(InlineKeyboardButton("התחל מחדש", callback_data="cb_restart"))
         markup.add(*new_row)
@@ -229,9 +214,9 @@ class Bot:
     def generate_empty_schedule(self, ):
         hours = {}
 
-        for h in range(START_TIME, END_TIME):
+        for h in range(self.START_TIME, self.END_TIME):
             slots = {}
-            for m in range(0, 60, SLOT_SIZE):
+            for m in range(0, 60, self.SLOT_SIZE):
                 slots[m] = ""
             hours[h] = slots
         return hours
@@ -240,7 +225,7 @@ class Bot:
         now = datetime.datetime.now()
         current_hour = int(now.strftime("%H"))
         sched = self.generate_empty_schedule()
-        if UPDATE_CALENDAR:
+        if self.UPDATE_CALENDAR:
             if today:
                 sched = update_schedule_for_date(sched, datetime.date.today())
             else:
@@ -270,7 +255,7 @@ class Bot:
 
     def generate_minutes(self, order):
         sched = self.generate_empty_schedule()
-        if UPDATE_CALENDAR:
+        if self.UPDATE_CALENDAR:
             sched = update_schedule_for_date(sched, order.date)
 
         i = 0
