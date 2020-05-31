@@ -1,4 +1,10 @@
+from __future__ import print_function
+
 import configparser
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+
 import datetime
 import threading
 
@@ -6,8 +12,225 @@ import telebot
 from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from bot_calendar import set_event, update_schedule_for_date
-from bot_db import update_stat
+# <editor-fold desc="Calendar imports and Vars">
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+
+CALENDAR_ID = config['Calendar']['calendar_id']
+BOT_SERVICE_ID = config['Calendar']['bot_sevice_id']
+SERVICE_ACCOUNT_FILE = config['Calendar']['service_credentials']
+SLOT_SIZE_MIN = int(config['Workday']['slot_size_min'])
+SCOPES = ['https://www.googleapis.com/auth/calendar.events']
+
+
+# </editor-fold>
+
+# <editor-fold desc="Calendar functions">
+def get_events_for_date(date):
+    try:
+
+        creds = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+        service = build('calendar', 'v3', credentials=creds)
+
+        dt = datetime.datetime.combine(date, datetime.datetime.min.time())
+
+        now = dt.isoformat() + 'Z'  # 'Z' indicates UTC time
+        events_result = service.events().list(calendarId=CALENDAR_ID, timeMin=now,
+                                              singleEvents=True,
+                                              orderBy='startTime').execute()
+        events = events_result.get('items', [])
+        return events
+    except Exception as e:
+        print(e)
+
+
+def update_schedule_for_date(schedule, date):
+    events = get_events_for_date(date)
+
+    for event in events:
+        startF = event['start']['dateTime']
+        startT = startF.split('T')[1]
+        startH = int(startT.split(':')[0])
+        startM = int(startT.split(':')[1])
+        sum = event['summary']
+        schedule[startH][startM] = sum
+
+    return schedule
+
+
+def set_event(order):
+    # setting service
+    creds = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+    service = build('calendar', 'v3', credentials=creds)
+
+    message_text = order.name + " " + order.phone
+    # dat=order.date.strftime("%Y-%M-%D")
+    start = datetime.datetime(order.date.year, order.date.month, order.date.day, int(order.hours), int(order.minutes),
+                              00, 000000)
+    end = start + datetime.timedelta(minutes=SLOT_SIZE_MIN)
+    # dat =dat +"T"+order.hours+":"+order.minutes+":00+03:00"
+
+    event = {
+        'summary': message_text,
+
+        'start': {
+            'dateTime': start.isoformat(),
+            'timeZone': 'Asia/Jerusalem'
+        },
+        'end': {
+            'dateTime': end.isoformat(),
+            'timeZone': 'Asia/Jerusalem'
+        },
+
+    }
+
+    event = service.events().insert(calendarId=CALENDAR_ID, body=event).execute()
+
+
+# </editor-fold>
+
+# <editor-fold desc="DB imports and vars">
+import sqlite3
+
+DATABASE = "scheduler_db.sqlite"
+
+
+# </editor-fold>
+
+# <editor-fold desc="DB functions">
+def orders_table_exist(c):
+    # get the count of tables with the name
+    c.execute(''' SELECT count(name) FROM sqlite_master WHERE type='table' AND name='Orders' ''')
+
+    # if the count is 1, then table exists
+    if c.fetchone()[0] == 1:
+        return True
+    else:
+        return False
+
+
+def create_interactions(c):
+    # Create table
+    c.execute('''CREATE TABLE Interactions
+                     (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                     Started TIMESTAMP,
+                     Ended TIMESTAMP,
+                     OrderID int NOT NULL ,
+                     UserFirst TEXT,
+                     UserLast TEXT,
+                     UserUser,
+                     UserTeId int,
+                     FOREIGN KEY(OrderID) REFERENCES Orders(OrderID)
+                     )''')
+
+
+def create_orders(c):
+    # Create table
+    c.execute('''CREATE TABLE Orders
+                     (OrderID INTEGER PRIMARY KEY AUTOINCREMENT,
+                     Created TIMESTAMP,
+                     Name TEXT,
+                     Phone TEXT,
+                     Date TEXT,
+                     Hours TEXT,
+                     Minutes TEXT
+                     )''')
+
+
+def validate_user(user):
+    if user.first_name == None:
+        user.first_name = ""
+    if user.last_name == None:
+        user.last_name = ""
+    if user.username == None:
+        user.last_name = ""
+    if user.id == None:
+        user.last_name = ""
+    return user
+
+
+def validate_order(order):
+    if order.name is None:
+        order.name = ""
+    if order.phone is None:
+        order.phone = ""
+    if order.date is None:
+        order.date = ""
+    if order.hours is None:
+        order.hours = ""
+    if order.minutes is None:
+        order.minutes = ""
+    return order
+
+
+def update_stat(order, user, new_record=False, close_record=False):
+    conn = sqlite3.connect(DATABASE)
+    c = conn.cursor()
+    naive_dt = datetime.datetime.now()
+    if not orders_table_exist(c):
+        create_interactions(c)
+        create_orders(c)
+
+    if new_record:
+        # add order
+
+        c.execute("INSERT INTO Orders (Created,Name,Phone,Date,Hours,Minutes) VALUES (?,?,?,?,?,?)",
+                  (naive_dt, order.name, order.phone, order.date, order.hours, order.minutes))
+        last_order = c.lastrowid
+
+        user = validate_user(user)
+        c.execute(
+            "INSERT INTO Interactions (Started,Ended,OrderId,UserFirst,UserLast,UserUser,UserTeId) VALUES (?,?,?,?,?,?,?)",
+            (naive_dt, "Null", last_order, user.first_name, user.last_name, user.username, user.id))
+    else:
+        # updating
+        # get last interaction for user
+        c.execute(
+            "SELECT * FROM Interactions WHERE UserTeId = ? ORDER BY ID DESC LIMIT 1 ",
+            (user.id,))
+
+        i = c.fetchone()
+        interact_id = i[0]
+        order_id = i[3]
+
+        # update Order
+        c.execute("UPDATE Orders SET Name=?,Phone=?,Date=?,Hours=?,Minutes=? WHERE OrderId = ?",
+                  (order.name, order.phone, order.date, order.hours, order.minutes, order_id))
+
+    if close_record:
+        # updating
+        # get last interaction for user
+        c.execute(
+            "SELECT * FROM Interactions WHERE UserTeId = ? ORDER BY ID DESC LIMIT 1 ",
+            (user.id,))
+
+        i = c.fetchone()
+        interact_id = i[0]
+        order_id = i[3]
+
+        # update Order
+        c.execute("UPDATE Orders SET Name=?,Phone=?,Date=?,Hours=?,Minutes=? WHERE OrderId = ?",
+                  (order.name, order.phone, order.date, order.hours, order.minutes, order_id))
+
+        # update Interaction
+        c.execute("UPDATE Interactions SET Ended=? WHERE ID = ?",
+                  (naive_dt, interact_id))
+
+    # Save (commit) the changes
+    conn.commit()
+
+    # We can also close the connection if we are done with it.
+    # Just be sure any changes have been committed or they will be lost.
+    conn.close()
+
+    pass
+
+
+# </editor-fold>
 
 
 class Order:

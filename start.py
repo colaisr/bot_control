@@ -12,7 +12,7 @@ from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
-import bot_tele
+from Bots import bot_tele
 from flask_user import UserMixin, UserManager, login_required, roles_required
 
 
