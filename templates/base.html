@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -8,6 +8,7 @@
 
     <!-- Styles -->
     <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
 
 
@@ -87,6 +88,8 @@
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <!-- Bootstrap -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
 {# *** Allow sub-templates to insert extra html to the bottom of the body *** #}
 {% block extra_js %}{% endblock %}

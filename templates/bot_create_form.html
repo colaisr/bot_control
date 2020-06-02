@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block bot_modal %}
 <div class="formwrapper">
     <h2 class="title">Contact</h2>
     <form method="POST" action="/createbotform">
@@ -8,3 +11,4 @@
         {{ form.hidden_tag() }}
     </form>
 </div>
+{% endblock %}
