@@ -38,7 +38,7 @@ def bots_page():
     user_id = current_user.id
     user_in_db = User.query.filter(User.id == user_id).first()
     bots = user_in_db.bots
-    return render_template('bots_lil.html', bots=bots)
+    return render_template('bots.html', bots=bots)
 
 
 @app.route('/login', methods=['GET', 'POST'])
