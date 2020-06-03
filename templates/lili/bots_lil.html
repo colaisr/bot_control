@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/bots.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+
+
+<div class="container-fluid" style="margin-top: 20px;">
+
+    <h1>My Bots</h1>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Created</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if bots %}
+
+            {% for bot in bots %}
+            <tr>
+                <th scope="row">
+                    <div>{{bot.name}}</div>
+                </th>
+                <td>
+                    <div>{{bot.created_at.strftime("%d/%m/%Y, %H:%M:%S")}}</div>
+                </td>
+                <td>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm">
+                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#botModal" data-whatever="Detalse">Detalse
+                                </button>
+                            </div>
+                            <div class="col-sm">
+                                <input type="checkbox" class="toggle action-toggle" data-toggle="toggle"
+                                       data-botId="{{ bot.id }}"/>
+                            </div>
+                            <div class="col-sm">
+                                <button type="button" class="btn btn-primary">Edite</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- MODAL -->
+
+    <div class="modal fade" id="botModal" tabindex="-1" role="dialog" aria-labelledby="botModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                {% block bot_modal %}{% endblock %}
+                <!--                    <div class="modal-header">-->
+                <!--                        <h5 class="modal-title" id="botModalLabel"></h5>-->
+                <!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                <!--                            <span aria-hidden="true">&times;</span>-->
+                <!--                        </button>-->
+                <!--                    </div>-->
+                <!--                    <div class="modal-body">-->
+                <!--                        <form>-->
+                <!--                            <div class="form-group">-->
+                <!--                                <label for="bot-name" class="col-form-label">Name:</label>-->
+                <!--                                <input type="text" class="form-control" id="bot-name">-->
+                <!--                            </div>-->
+                <!--                            <div class="form-group">-->
+                <!--                                <label for="bot-api-key" class="col-form-label">API key:</label>-->
+                <!--                                <input type="text" class="form-control" id="bot-api-key">-->
+                <!--                            </div>-->
+                <!--                            <div class="form-group">-->
+                <!--                                <label for="bot-calendar-id" class="col-form-label">Calendar Id:</label>-->
+                <!--                                <input type="text" class="form-control" id="bot-calendar-id">-->
+                <!--                            </div>-->
+                <!--                            <div class="form-group">-->
+                <!--                                <label for="bot-create-date" class="col-form-label">Create date:</label>-->
+                <!--                                <input type="text" class="form-control" id="bot-create-date">-->
+                <!--                            </div>-->
+                <!--                        </form>-->
+                <!--                    </div>-->
+                <!--                    <div class="modal-footer">-->
+                <!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+                <!--                        &lt;!&ndash;<button type="button" class="btn btn-primary">Send message</button>&ndash;&gt;-->
+                <!--                    </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+<!--    function notifyU(event) {-->
+<!--        document.getElementById('mbUploading').removeAttribute("hidden");-->
+<!--    }-->
+<!--    const formU = document.getElementById('fUpload');-->
+<!--    formU.addEventListener('submit', notifyU);-->
+
+$(document).ready(function () {
+
+  $('.action-toggle').bootstrapToggle({
+        on: 'Stop',
+        off: 'Start',
+        onstyle: 'danger',
+        offstyle: 'success'
+  });
+
+  $('.action-toggle').change(function() {
+
+    data = {isStart: $(this).prop('checked'), botId: $(this).data('botid')}
+
+    $.get( "/action", data, function(data) {
+<!--        TODO:bootstrap alert response-->
+    })
+<!--    .done(function() {-->
+<!--        -->
+<!--    })-->
+    .fail(function(error) {
+<!--        TODO: alert error-->
+    })
+<!--    .always(function() {-->
+<!--        -->
+<!--    });-->
+
+  });
+
+});
+
+
+
+
+
+<!--    $('#botModal').on('show.bs.modal', function (event) {-->
+
+<!--                $.get("/editbot/1")-->
+<!--&lt;!&ndash;            var button = $(event.relatedTarget) // Button that triggered the modal&ndash;&gt;-->
+<!--&lt;!&ndash;            var recipient = button.data('whatever') // Extract info from data-* attributes&ndash;&gt;-->
+<!--&lt;!&ndash;            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).&ndash;&gt;-->
+<!--&lt;!&ndash;            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.&ndash;&gt;-->
+<!--&lt;!&ndash;            var modal = $(this)&ndash;&gt;-->
+<!--&lt;!&ndash;            modal.find('.modal-title').text(recipient)&ndash;&gt;-->
+<!--&lt;!&ndash;            modal.find('.modal-body input#bot-name').val(recipient)&ndash;&gt;-->
+<!--&lt;!&ndash;            &ndash;&gt;-->
+
+<!--    })-->
+
+
+
+
+
+
+
+</script>
+
+{% endblock %}
+{% block extra_js %}
+
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

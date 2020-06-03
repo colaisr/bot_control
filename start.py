@@ -81,11 +81,13 @@ class User(db.Model, UserMixin):
     # Define the relationship to Bots via UserBots
     bots = db.relationship('Bot', secondary='user_bots')
 
+
 # Define the Role data-model
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
+
 
 # Define the UserRoles association table
 class UserRoles(db.Model):
@@ -94,12 +96,14 @@ class UserRoles(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
 
+
 # Define the UserBots association table
 class UserBots(db.Model):
     __tablename__ = 'user_bots'
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
     bot_id = db.Column(db.Integer(), db.ForeignKey('bots.id', ondelete='CASCADE'))
+
 
 class Bot(db.Model):
     __tablename__ = 'bots'
@@ -169,7 +173,7 @@ def bots_page():
     user_id = current_user.id
     user_in_db = User.query.filter(User.id == user_id).first()
     bots = user_in_db.bots
-    return render_template('bots.html', bots=bots)
+    return render_template('lili/bots_lil.html', bots=bots)
 
 
 @app.route('/createbotform', methods=('GET', 'POST'))
@@ -215,36 +219,29 @@ def edit_bot(botId):
         return 'Error loading #{id}'.format(id=botId)
 
 
-@app.route('/startbot/<botId>', methods=['GET', 'POST'])
+@app.route('/action')
 @login_required
-def start_bot(botId):
-    bot_in_db = Bot.query.filter(Bot.id == botId).first()
-    if bot_in_db:
-        global ALL_RUNNING_BOTS
-        ALL_RUNNING_BOTS[str(bot_in_db.id)] = bot_tele.Bot(bot_in_db.api_key, update=True)
-        ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
-
-        return redirect(url_for('bots_page'))
-    else:
-        return 'Error starting #{id}'.format(id=botId)
-
-
-@app.route('/stopbot/<botId>', methods=['GET', 'POST'])
-@login_required
-def stop_bot(botId):
+def action():
     global ALL_RUNNING_BOTS
-
-    if botId in ALL_RUNNING_BOTS:
-
-        ALL_RUNNING_BOTS[botId].stop()
-        ALL_RUNNING_BOTS[botId] = None
-
-        return redirect(url_for('bots_page'))
+    bot_id = request.args.get("botId", None)
+    is_start = request.args.get("isStart", 'false')
+    if is_start.lower() == 'true':
+        bot_in_db = Bot.query.filter(Bot.id == bot_id).first()
+        if bot_in_db:
+            ALL_RUNNING_BOTS[str(bot_in_db.id)] = bot_tele.Bot(bot_in_db.api_key, update=True)
+            ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
+        else:
+            return 'Error starting #{id}'.format(id=bot_id)
     else:
-        return 'Error stopping #{id}'.format(id=botId)
+        if bot_id in ALL_RUNNING_BOTS:
 
+            ALL_RUNNING_BOTS[bot_id].stop()
+            del ALL_RUNNING_BOTS[bot_id]
+        else:
+            return 'Error stopping #{id}'.format(id=bot_id)
+    return redirect(url_for('bots_page'))
 
-@app.route('/createbot', methods=['POST'])
+@app.route('/createbot')
 @login_required
 def create_bot():
     user_id = current_user.id
@@ -304,10 +301,15 @@ def admin_page():
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('page_not_found.html'), 404
+    return render_template('errors/404.html'), 404
+
+
+# @app.errorhandler(500)
+# def internal_error(error):
+#     return render_template('errors/page_not_found.html'), 404
 
 
 if __name__ == '__main__':
-    #app.run(debug=True)
+    # app.run(debug=True)
     app.run()
-#comment cola
+# comment cola
