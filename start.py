@@ -81,13 +81,11 @@ class User(db.Model, UserMixin):
     # Define the relationship to Bots via UserBots
     bots = db.relationship('Bot', secondary='user_bots')
 
-
 # Define the Role data-model
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), unique=True)
-
 
 # Define the UserRoles association table
 class UserRoles(db.Model):
@@ -96,14 +94,12 @@ class UserRoles(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
 
-
 # Define the UserBots association table
 class UserBots(db.Model):
     __tablename__ = 'user_bots'
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
     bot_id = db.Column(db.Integer(), db.ForeignKey('bots.id', ondelete='CASCADE'))
-
 
 class Bot(db.Model):
     __tablename__ = 'bots'
@@ -173,7 +169,7 @@ def bots_page():
     user_id = current_user.id
     user_in_db = User.query.filter(User.id == user_id).first()
     bots = user_in_db.bots
-    return render_template('bots.html', bots=bots)
+    return render_template('bots_lil.html', bots=bots)
 
 
 @app.route('/createbotform', methods=('GET', 'POST'))
