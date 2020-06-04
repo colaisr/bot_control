@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-    <title>{{ user_manager.USER_APP_NAME }}</title>
-<!--    <title>Lili test</title>-->
+
+    <title>Lili test</title>
 
     <!-- Styles -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
@@ -27,13 +27,12 @@
 
     <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
-            {% if call_or_get(current_user.is_authenticated) %}
-            <a href="{{ url_for('user.edit_user_profile') }}">{{ current_user.username or current_user.email }}</a>
+            {% if current_user.is_authenticated %}
+            <a href="">{{ current_user.username or current_user.email }}</a>
             &nbsp; | &nbsp;
-            <a href="{{ url_for('user.logout') }}">{%trans%}Sign out{%endtrans%}</a>
+            <a href="{{ url_for('logout') }}">{%trans%}Sign out{%endtrans%}</a>
             {% else %}
-            <a href="{{ url_for('user.login') }}">{%trans%}Sign in{%endtrans%}</a>
-<!--            <a href="{{ url_for('login') }}">{%trans%}Sign in{%endtrans%}</a>-->
+            <a href="{{ url_for('login') }}">{%trans%}Sign in{%endtrans%}</a>
             {% endif %}
         </li>
     </ul>
@@ -70,10 +69,9 @@
 <br/>
 <hr class="no-margins"/>
 <div class="clearfix with-margins" id="footer-div">
-    <div class="pull-left">{{ user_manager.USER_APP_NAME }} {{ user_manager.USER_APP_VERSION }}</div>
-    <div class="pull-right">&copy; {{ user_manager.USER_COPYRIGHT_YEAR }} {{ user_manager.USER_CORPORATION_NAME }}</div>
-<!--    <div class="pull-left">LILI 1.1.1.23344</div>-->
-<!--    <div class="pull-right">&copy; 2020 bots control</div>-->
+
+    <div class="pull-left">LILI 1.1.1.23344</div>
+    <div class="pull-right">&copy; 2020 bots control</div>
 </div>
 {% endblock %}
 
