@@ -21,6 +21,14 @@ class Config(object):
     MAIL_PASSWORD = config['Mail']['pass']
     MAIL_DEFAULT_SENDER = '"Bot Control" <noreply@example.com>'
 
+    # errors mail server
+    ERRORS_MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    ERRORS_MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    ERRORS_MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
+    ERRORS_MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    ERRORS_MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    ADMINS = ['liliana.isr@gmail.com']
+
     # Flask-User settings
     USER_APP_NAME = "Bot Control"  # Shown in and email templates and page footers
     USER_APP_VERSION = "1.01"
