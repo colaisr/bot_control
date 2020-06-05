@@ -12,28 +12,29 @@
 # from wtforms.validators import DataRequired
 # from wtforms.widgets import HiddenInput
 #
-from Bots import bot_tele
+# from Bots import bot_tele
 # # from flask_user import UserMixin, UserManager, login_required, roles_required
 # # from flask_user import UserManager, login_required, roles_required
 
 # LILI imports
-from flask import render_template, flash, redirect, url_for, request
-from app import app
-from app.forms import LoginForm, RegistrationForm
+from flask import render_template, flash, redirect, url_for
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Bot
 
+from app import app
 from app import db
+from app.forms import LoginForm, RegistrationForm
+from app.models import User
+
 
 # The Home page is accessible to anyone
 @app.route('/')
 @app.route('/home')
 def home_page():
-    if current_user.is_authenticated:
-        return redirect(url_for('bots_page'))
-    else:
-        return render_template('home.html', title='Home')
-
+    # if current_user.is_authenticated:
+    #     return utils.redirect(url_for('bots_page'))
+    # else:
+    #     return render_template('home.html', title='Home')
+    return render_template('home.html', title='Home')
 
 
 # The Bots page showing the bots per user
@@ -79,7 +80,6 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
-
 
 
 # Initialize Flask-BabelEx
@@ -175,27 +175,27 @@ ALL_RUNNING_BOTS = {}
 #         return 'Error loading #{id}'.format(id=botId)
 #
 #
-@app.route('/action')
-@login_required
-def action():
-    global ALL_RUNNING_BOTS
-    bot_id = request.args.get("botId", None)
-    is_start = request.args.get("isStart", 'false')
-    if is_start.lower() == 'true':
-        bot_in_db = Bot.query.filter(Bot.id == bot_id).first()
-        if bot_in_db:
-            ALL_RUNNING_BOTS[str(bot_in_db.id)] = bot_tele.Bot(bot_in_db.api_key, update=True)
-            ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
-        else:
-            return 'Error starting #{id}'.format(id=bot_id)
-    else:
-        if bot_id in ALL_RUNNING_BOTS:
-
-            ALL_RUNNING_BOTS[bot_id].stop()
-            del ALL_RUNNING_BOTS[bot_id]
-        else:
-            return 'Error stopping #{id}'.format(id=bot_id)
-    return redirect(url_for('bots_page'))
+# @app.route('/action')
+# @login_required
+# def action():
+#     global ALL_RUNNING_BOTS
+#     bot_id = request.args.get("botId", None)
+#     is_start = request.args.get("isStart", 'false')
+#     if is_start.lower() == 'true':
+#         bot_in_db = Bot.query.filter(Bot.id == bot_id).first()
+#         if bot_in_db:
+#             ALL_RUNNING_BOTS[str(bot_in_db.id)] = bot_tele.Bot(bot_in_db.api_key, update=True)
+#             ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
+#         else:
+#             return 'Error starting #{id}'.format(id=bot_id)
+#     else:
+#         if bot_id in ALL_RUNNING_BOTS:
+#
+#             ALL_RUNNING_BOTS[bot_id].stop()
+#             del ALL_RUNNING_BOTS[bot_id]
+#         else:
+#             return 'Error stopping #{id}'.format(id=bot_id)
+#     return utils.redirect(url_for('bots_page'))
 #
 # @app.route('/createbot')
 # @login_required
