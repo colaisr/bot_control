@@ -315,10 +315,11 @@
 #
 
 import logging
+import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
+
 from app import app, db
 from app.models import User, Bot
-import os
 
 if not app.debug:
     if app.config['ERRORS_MAIL_SERVER']:
@@ -356,3 +357,4 @@ if __name__ == '__main__':
     # app.run(debug=True)
     app.run()
 # # reverted to rearchitecting
+# rebased
