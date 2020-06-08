@@ -34,7 +34,6 @@ $(document).ready(function () {
   });
 
   $('.modal-opener').click(function () {
-  debugger;
         var url = $(this).data('whatever');
         var title = $(this).data('title');
         var button = $(this).data('action-button');
