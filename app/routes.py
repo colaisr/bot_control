@@ -1,8 +1,7 @@
-import configparser
 import datetime
 #comment
 #comment2
-from flask import Flask, render_template_string, request, url_for
+from flask import render_template_string, request, url_for
 from flask_babelex import Babel
 from flask_login import current_user
 from flask_sqlalchemy import SQLAlchemy
@@ -19,7 +18,7 @@ from flask_user import UserMixin, UserManager, login_required, roles_required
 # LILI imports
 from flask import render_template, flash, redirect
 from app import app
-from app.forms import LoginForm
+# from forms import LoginForm
 
 
 # The Home page is accessible to anyone
@@ -42,14 +41,14 @@ def bots_page():
     return render_template('bots_lil.html', bots=bots)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        flash('Login requested for user {}, remember_me={}'.format(
-            form.username.data, form.remember_me.data))
-        return redirect(url_for('home_page'))
-    return render_template('login.html', title='Sign In', form=form)
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         flash('Login requested for user {}, remember_me={}'.format(
+#             form.username.data, form.remember_me.data))
+#         return redirect(url_for('home_page'))
+#     return render_template('login.html', title='Sign In', form=form)
 
 
 

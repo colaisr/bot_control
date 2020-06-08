@@ -9,7 +9,16 @@
 
 <div class="container-fluid" style="margin-top: 20px;">
 
-    <h1>My Bots</h1>
+    <div class="row align-items-center">
+        <div class="col-10"><h1>My Bots</h1></div>
+        <div class="col">
+            <button type="button" class="btn btn-primary modal-opener"
+                    data-title="Create bot" data-action-button="Save" data-toggle="modal"
+                    data-target="#botModal" data-whatever="{{url_for('create_bot')}}">
+                Create bot
+            </button>
+        </div>
+    </div>
     <div class="table-responsive">
         <table class="table table-hover">
             <thead class="thead-light">
@@ -34,8 +43,11 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-sm">
-                                <button type="button" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#botModal" data-whatever="Detalse">Detalse
+                                <button type="button" class="btn btn-primary modal-opener"
+                                        data-title="Edit bot {{bot.name}}" data-action-button="Save"
+                                        data-toggle="modal"
+                                        data-target="#botModal" data-whatever="{{url_for('edit_bot',botId=bot.id)}}">
+                                    Edit
                                 </button>
                             </div>
                             <div class="col-sm">
@@ -43,7 +55,12 @@
                                        data-botId="{{ bot.id }}"/>
                             </div>
                             <div class="col-sm">
-                                <button type="button" class="btn btn-primary">Edite</button>
+                                <button type="button" class="btn btn-primary modal-opener"
+                                        data-title="Delete bot {{bot.name}}" data-toggle="modal"
+                                        data-action-button="Delete"
+                                        data-target="#botModal" data-whatever="{{url_for('delete_bot',botId=bot.id)}}">
+                                    Delete
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -63,49 +80,25 @@
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                {% block bot_modal %}{% endblock %}
-                <!--                    <div class="modal-header">-->
-                <!--                        <h5 class="modal-title" id="botModalLabel"></h5>-->
-                <!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-                <!--                            <span aria-hidden="true">&times;</span>-->
-                <!--                        </button>-->
-                <!--                    </div>-->
-                <!--                    <div class="modal-body">-->
-                <!--                        <form>-->
-                <!--                            <div class="form-group">-->
-                <!--                                <label for="bot-name" class="col-form-label">Name:</label>-->
-                <!--                                <input type="text" class="form-control" id="bot-name">-->
-                <!--                            </div>-->
-                <!--                            <div class="form-group">-->
-                <!--                                <label for="bot-api-key" class="col-form-label">API key:</label>-->
-                <!--                                <input type="text" class="form-control" id="bot-api-key">-->
-                <!--                            </div>-->
-                <!--                            <div class="form-group">-->
-                <!--                                <label for="bot-calendar-id" class="col-form-label">Calendar Id:</label>-->
-                <!--                                <input type="text" class="form-control" id="bot-calendar-id">-->
-                <!--                            </div>-->
-                <!--                            <div class="form-group">-->
-                <!--                                <label for="bot-create-date" class="col-form-label">Create date:</label>-->
-                <!--                                <input type="text" class="form-control" id="bot-create-date">-->
-                <!--                            </div>-->
-                <!--                        </form>-->
-                <!--                    </div>-->
-                <!--                    <div class="modal-footer">-->
-                <!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-                <!--                        &lt;!&ndash;<button type="button" class="btn btn-primary">Send message</button>&ndash;&gt;-->
-                <!--                    </div>-->
+                <div class="modal-header bg-info text-white">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!--FORM CONTENT-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="submit" type="submit" class="btn btn-success">Save</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-
-<!--    function notifyU(event) {-->
-<!--        document.getElementById('mbUploading').removeAttribute("hidden");-->
-<!--    }-->
-<!--    const formU = document.getElementById('fUpload');-->
-<!--    formU.addEventListener('submit', notifyU);-->
 
 $(document).ready(function () {
 
@@ -115,48 +108,7 @@ $(document).ready(function () {
         onstyle: 'danger',
         offstyle: 'success'
   });
-
-  $('.action-toggle').change(function() {
-
-    data = {isStart: $(this).prop('checked'), botId: $(this).data('botid')}
-
-    $.get( "/action", data, function(data) {
-<!--        TODO:bootstrap alert response-->
-    })
-<!--    .done(function() {-->
-<!--        -->
-<!--    })-->
-    .fail(function(error) {
-<!--        TODO: alert error-->
-    })
-<!--    .always(function() {-->
-<!--        -->
-<!--    });-->
-
-  });
-
-});
-
-
-
-
-
-<!--    $('#botModal').on('show.bs.modal', function (event) {-->
-
-<!--                $.get("/editbot/1")-->
-<!--&lt;!&ndash;            var button = $(event.relatedTarget) // Button that triggered the modal&ndash;&gt;-->
-<!--&lt;!&ndash;            var recipient = button.data('whatever') // Extract info from data-* attributes&ndash;&gt;-->
-<!--&lt;!&ndash;            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).&ndash;&gt;-->
-<!--&lt;!&ndash;            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.&ndash;&gt;-->
-<!--&lt;!&ndash;            var modal = $(this)&ndash;&gt;-->
-<!--&lt;!&ndash;            modal.find('.modal-title').text(recipient)&ndash;&gt;-->
-<!--&lt;!&ndash;            modal.find('.modal-body input#bot-name').val(recipient)&ndash;&gt;-->
-<!--&lt;!&ndash;            &ndash;&gt;-->
-
-<!--    })-->
-
-
-
+})
 
 
 
@@ -167,4 +119,5 @@ $(document).ready(function () {
 {% block extra_js %}
 
 <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bots.js') }}"></script>
 {% endblock %}
