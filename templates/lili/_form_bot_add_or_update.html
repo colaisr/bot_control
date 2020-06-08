@@ -1,0 +1,12 @@
+{% from 'bootstrap/wtf.html' import form_field %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/bots.css') }}" rel="stylesheet">
+{% endblock %}
+
+<form id="botModalForm" name="stepForm" class="form" method="post">
+        {{ form.hidden_tag() }}
+        {{ form_field(form.name) }}
+        {{ form_field(form.api_key) }}
+        {{ form_field(form.calendar_id) }}
+</form>
