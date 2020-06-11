@@ -13,7 +13,7 @@ from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
-from Bots import bot_tele
+from Bots import schedule_bot
 from flask_user import UserMixin, UserManager, login_required, roles_required
 
 # LILI imports
@@ -61,7 +61,7 @@ def action():
     if is_start.lower() == 'true':
         bot_in_db = Bot.query.filter(Bot.id == bot_id).first()
         if bot_in_db:
-            ALL_RUNNING_BOTS[str(bot_in_db.id)] = bot_tele.Bot(bot_in_db.api_key, update=True)
+            ALL_RUNNING_BOTS[str(bot_in_db.id)] = schedule_bot.Schedule_bot(bot_in_db.api_key, update=True)
             ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
         else:
             return 'Error starting #{id}'.format(id=bot_id)

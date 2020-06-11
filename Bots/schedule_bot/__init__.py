@@ -1,6 +1,9 @@
 from __future__ import print_function
 
 import configparser
+import pathlib
+
+from Bots.bot_base import Bot_base
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -96,7 +99,7 @@ def set_event(order):
 # <editor-fold desc="DB imports and vars">
 import sqlite3
 
-DATABASE = "scheduler_db.sqlite"
+DATABASE = str(pathlib.Path(__file__).parent.absolute())+"/scheduler_db.sqlite"
 
 
 # </editor-fold>
@@ -242,43 +245,17 @@ class Order:
         self.phone = "None"
 
 
-class Bot:
+class Schedule_bot(Bot_base):
 
-    def __init__(self, key, update=False, start_time=8, end_time=20, interval=15, owner_id=0):
-        self.bot = telebot.TeleBot(key)
+    def __init__(self, key,password="rrr", update=False, start_time=8, end_time=20, interval=15):
+        super().__init__(key,password)
+        self.type="Scheduling bot"
+        self.description="Scheduling bot to handle the que Hebrew Version"
         self.user_dict = {}
         self.START_TIME = start_time
         self.END_TIME = end_time
         self.SLOT_SIZE = interval
         self.UPDATE_CALENDAR = update
-        self.OWNER_ID = owner_id
-        self.thread = None
-
-        # Handle '/iammaster command
-        @self.bot.message_handler(commands=['iammaster'])
-        def confirm_master(message):
-
-            msg = self.bot.reply_to(message, """\
-            אז אתה בעל הבית ?  yes/clear
-            """)
-            self.bot.register_next_step_handler(msg, process_master_set)
-
-        # processing the belonging
-        def process_master_set(message):
-            try:
-                chat_id = message.chat.id
-                name = message.text
-                user_id = message.chat.id
-
-                if message.text.lower() == 'yes':
-                    self.OWNER_ID = user_id
-                    self.bot.reply_to(message, 'סבבה')
-                else:
-                    self.OWNER_ID = 0
-                    self.bot.reply_to(message, 'ניקיתי')
-
-            except Exception as e:
-                self.bot.reply_to(message, 'oooops')
 
         # Handle Restart
         def restart_the_flow(call):
@@ -428,11 +405,6 @@ class Bot:
             except Exception as e:
                 print(e)
 
-    def add_reset(self, markup):
-        new_row = []
-        new_row.append(InlineKeyboardButton("התחל מחדש", callback_data="cb_restart"))
-        markup.add(*new_row)
-        return markup
 
     def generate_empty_schedule(self, ):
         hours = {}
@@ -501,14 +473,6 @@ class Bot:
         return markup
 
 
-    def start(self):
-
-        self.thread = threading.Thread(name=self.bot.token, target=self.bot.polling)
-        self.thread.start()
-
-    def stop(self):
-        self.bot.stop_bot()
-
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
@@ -518,6 +482,6 @@ if __name__ == '__main__':
     last_updated_schedule = {}
     OWNER_ID = 0
 
-    bot1 = Bot(API_TOKEN)
+    bot1 = Schedule_bot(API_TOKEN)
 
     bot1.start()
