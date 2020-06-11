@@ -270,6 +270,7 @@ class Schedule_bot(Bot_base):
         # Handle '/start'
         @self.bot.message_handler(commands=['start'])
         def send_welcome(message):
+            self.add_message_to_db(message)
             update_stat(Order("empty"), message.from_user, True)
 
             msg = self.bot.reply_to(message, """\
@@ -282,6 +283,7 @@ class Schedule_bot(Bot_base):
         # processing name
         def process_name_step(message):
             try:
+                self.add_message_to_db(message)
                 chat_id = message.chat.id
                 name = message.text
                 order = Order(name)
@@ -350,6 +352,7 @@ class Schedule_bot(Bot_base):
         # processingPhone
         def process_phone_step(message):
             try:
+                self.add_message_to_db(message)
                 chat_id = message.chat.id
                 order = self.user_dict[chat_id]
                 if message.contact is None:
@@ -387,6 +390,7 @@ class Schedule_bot(Bot_base):
 
         @self.bot.callback_query_handler(func=lambda call: True)
         def callback_query(call):
+            self.add_message_to_db(call)
             try:
                 if "cb_day" in call.data:
                     process_day_step(call)
