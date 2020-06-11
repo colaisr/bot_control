@@ -5,7 +5,8 @@ from telebot.types import InlineKeyboardButton
 
 
 class Bot_base:
-  def __init__(self,key,password):
+  def __init__(self,key,password,bot_id):
+    self.BOT_SYSTEM_ID=bot_id
     self.bot = telebot.TeleBot(key)
     self.thread = None
     self.OWNER_ID = 0

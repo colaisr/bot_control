@@ -244,8 +244,8 @@ class Order:
 
 class ScheduleR_bot(Bot_base):
 
-    def __init__(self, key, update=False, start_time=8, end_time=20, interval=15, owner_id=0):
-        super().__init__(key)
+    def __init__(self, key,bot_ID,password="rrr", update=False, start_time=8, end_time=20, interval=15,):
+        super().__init__(key,password,bot_id=bot_ID)
         self.type="Scheduling bot R"
         self.description="Scheduling bot to handle the que Russian Version"
         self.user_dict = {}
@@ -253,34 +253,6 @@ class ScheduleR_bot(Bot_base):
         self.END_TIME = end_time
         self.SLOT_SIZE = interval
         self.UPDATE_CALENDAR = update
-        self.OWNER_ID = owner_id
-
-
-        # Handle '/iammaster command
-        @self.bot.message_handler(commands=['iammaster'])
-        def confirm_master(message):
-
-            msg = self.bot.reply_to(message, """\
-            אז אתה בעל הבית ?  yes/clear
-            """)
-            self.bot.register_next_step_handler(msg, process_master_set)
-
-        # processing the belonging
-        def process_master_set(message):
-            try:
-                chat_id = message.chat.id
-                name = message.text
-                user_id = message.chat.id
-
-                if message.text.lower() == 'yes':
-                    self.OWNER_ID = user_id
-                    self.bot.reply_to(message, 'סבבה')
-                else:
-                    self.OWNER_ID = 0
-                    self.bot.reply_to(message, 'ניקיתי')
-
-            except Exception as e:
-                self.bot.reply_to(message, 'oooops')
 
         # Handle Restart
         def restart_the_flow(call):
@@ -507,6 +479,6 @@ if __name__ == '__main__':
     last_updated_schedule = {}
     OWNER_ID = 0
 
-    bot1 = Schedule_bot(API_TOKEN)
+    bot1 = ScheduleR_bot(API_TOKEN)
 
     bot1.start()

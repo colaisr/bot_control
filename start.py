@@ -61,7 +61,7 @@ def action():
     if is_start.lower() == 'true':
         bot_in_db = Bot.query.filter(Bot.id == bot_id).first()
         if bot_in_db:
-            ALL_RUNNING_BOTS[str(bot_in_db.id)] = schedule_bot.Schedule_bot(bot_in_db.api_key, update=True)
+            ALL_RUNNING_BOTS[str(bot_in_db.id)] = schedule_bot.Schedule_bot(key=bot_in_db.api_key,bot_ID=bot_in_db.id, update=True)
             ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
         else:
             return 'Error starting #{id}'.format(id=bot_id)

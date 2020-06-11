@@ -247,8 +247,8 @@ class Order:
 
 class Schedule_bot(Bot_base):
 
-    def __init__(self, key,password="rrr", update=False, start_time=8, end_time=20, interval=15):
-        super().__init__(key,password)
+    def __init__(self, key,bot_ID,password="rrr", update=False, start_time=8, end_time=20, interval=15,):
+        super().__init__(key,password,bot_id=bot_ID)
         self.type="Scheduling bot"
         self.description="Scheduling bot to handle the que Hebrew Version"
         self.user_dict = {}
