@@ -2,6 +2,9 @@ import configparser
 import datetime
 # comment
 # comment2
+import importlib
+import os
+
 from flask import Flask, render_template_string, request, url_for
 from flask_babelex import Babel
 from flask_login import current_user
@@ -99,6 +102,22 @@ def edit_bot(botId):
 @login_required
 def create_bot():
     user_id = current_user.id
+
+    #getting all available bots
+    bots_dir=os.getcwd()+'/Bots'
+    dir_and_bot={}
+    imported_bots={}
+    for d in os.listdir(bots_dir):
+        if d.endswith("_bot"):
+            dir_and_bot[d]=os.path.join(bots_dir, d)
+
+    all_bots_folders= [os.path.join(bots_dir, d) for d in os.listdir(bots_dir)]
+    for k,v in dir_and_bot.items():
+        imported_bots[k]=importlib.import_module("Bots"+"."+k, package=None)
+
+    # imported bots is ready for listing and creation
+
+
 
     form = forms.BotCreateForm()
     if request.method == 'POST':
