@@ -34,6 +34,14 @@ class TeleMessage(Base):
   botID=Column(String)
   messageText=Column(String)
 
+class BotErrors(Base):
+  __tablename__ = 'errors'
+
+  id = Column(Integer, primary_key=True)
+  occurence = Column(DateTime)
+  botID=Column(String)
+  errorText=Column(String)
+
 Base.metadata.create_all(engine)
 # </editor-fold>
 
@@ -77,8 +85,11 @@ class Bot_base:
     """
 Starts the bot in separate thread
     """
-    self.thread = threading.Thread(name=self.bot.token, target=self.bot.polling)
-    self.thread.start()
+    try:
+      self.thread = threading.Thread(name=self.bot.token, target=self.bot.polling)
+      self.thread.start()
+    except Exception as e:
+      self.log_error(e)
 
   def stop(self):
     """
@@ -102,12 +113,19 @@ Add restart button to the bottom of the markup
     if type(message) == Message:
       db_message = TeleMessage(received=naive_dt,fromUserId=message.from_user.id,fromUserUserName=message.from_user.username,botID=self.BOT_SYSTEM_ID,messageText=message.html_text)
     elif type(message) == CallbackQuery:
-      db_message = TeleMessage(received=naive_dt,fromUserId=message.from_user.id,fromUserUserName=message.from_user.username,botID=self.BOT_SYSTEM_ID,messageText=message.data)
+      db_message = TeleMessage(received=naive_dt,fromUserId=message.from_user.id,
+                               fromUserUserName=message.from_user.username,
+                               botID=self.BOT_SYSTEM_ID,messageText=message.data)
 
     session.add(db_message)
     session.commit()
-  def log_error(self,error):
-    #todo:add error logging
-    a=1
 
+  def log_error(self,error):
+    problem=error.args[0]
+    naive_dt = datetime.now()
+    db_error = BotErrors(received=naive_dt,  botID=self.BOT_SYSTEM_ID,
+                             errorText=problem)
+
+    session.add(db_error)
+    session.commit()
 

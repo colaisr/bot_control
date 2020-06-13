@@ -270,13 +270,16 @@ class Schedule_bot(Bot_base):
         # Handle '/start'
         @self.bot.message_handler(commands=['start'])
         def send_welcome(message):
-            self.add_message_to_db(message)
-            update_stat(Order("empty"), message.from_user, True)
+            try:
+                self.add_message_to_db(message)
+                update_stat(Order("empty"), message.from_user, True)
 
-            msg = self.bot.reply_to(message, """\
-            מייד נזמין לך תור ! מה שמך ?
-            """)
-            self.bot.register_next_step_handler(msg, process_name_step)
+                msg = self.bot.reply_to(message, """\
+                מייד נזמין לך תור ! מה שמך ?
+                """)
+                self.bot.register_next_step_handler(msg, process_name_step)
+            except Exception as e:
+                self.log_error(e)
 
         # steps
 
@@ -298,98 +301,125 @@ class Schedule_bot(Bot_base):
                 msg = self.bot.reply_to(message, 'איזה יום נוח לך?', reply_markup=markup)
 
             except Exception as e:
-                self.bot.reply_to(message, 'oooops')
+                self.log_error(e)
 
         # processing day
         def process_day_step(call):
-            chat_id = call.from_user.id
-            order = self.user_dict[chat_id]
+            try:
+                chat_id = call.from_user.id
+                if chat_id in self.user_dict.keys():
+                    order = self.user_dict[chat_id]
+                else:
+                    #from old chat - no name
+                    return
 
-            call.data = call.data.replace("cb_day_", "")
-            markup = InlineKeyboardMarkup()
-            if call.data == "today":
-                order.date = datetime.date.today()
-                self.bot.answer_callback_query(call.id, "Today selected")
-                markup = self.generate_hours(today=True)
+                call.data = call.data.replace("cb_day_", "")
+                markup = InlineKeyboardMarkup()
+                if call.data == "today":
+                    order.date = datetime.date.today()
+                    self.bot.answer_callback_query(call.id, "Today selected")
+                    markup = self.generate_hours(today=True)
 
 
-            elif call.data == "tomorrow":
-                order.date = datetime.date.today() + datetime.timedelta(days=1)
-                self.bot.answer_callback_query(call.id, "Tomorrow selected")
-                markup = self.generate_hours()
-            markup = self.add_reset(markup)
-            self.bot.send_message(chat_id, "איזה שעה ?", reply_markup=markup)
+                elif call.data == "tomorrow":
+                    order.date = datetime.date.today() + datetime.timedelta(days=1)
+                    self.bot.answer_callback_query(call.id, "Tomorrow selected")
+                    markup = self.generate_hours()
+                markup = self.add_reset(markup)
+                self.bot.send_message(chat_id, "איזה שעה ?", reply_markup=markup)
+            except Exception as e:
+                self.log_error(e)
             # update_stat(order, call.from_user)
 
         # processing hour
         def process_hours_step(call):
-            chat_id = call.from_user.id
-            order = self.user_dict[chat_id]
+            try:
+                chat_id = call.from_user.id
+                if chat_id in self.user_dict.keys():
+                    order = self.user_dict[chat_id]
+                else:
+                    #from old chat - no name
+                    return
+                call.data = call.data.replace("cb_hours_", "")
+                order.hours = call.data
 
-            call.data = call.data.replace("cb_hours_", "")
-            order.hours = call.data
-
-            markup = self.generate_minutes(order)
-            markup = self.add_reset(markup)
-            self.bot.send_message(chat_id, "מתי בדיוק ?", reply_markup=markup)
-            update_stat(order, call.from_user)
+                markup = self.generate_minutes(order)
+                markup = self.add_reset(markup)
+                self.bot.send_message(chat_id, "מתי בדיוק ?", reply_markup=markup)
+                update_stat(order, call.from_user)
+            except Exception as e:
+                self.log_error(e)
 
         # processing minutes
         def process_minutes_step(call):
-            chat_id = call.from_user.id
-            order = self.user_dict[chat_id]
+            try:
+                chat_id = call.from_user.id
+                if chat_id in self.user_dict.keys():
+                    order = self.user_dict[chat_id]
+                else:
+                    #from old chat - no name
+                    return
+                call.data = call.data.replace("cb_minutes_", "")
+                order.minutes = call.data
 
-            call.data = call.data.replace("cb_minutes_", "")
-            order.minutes = call.data
+                markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+                markup.add(types.KeyboardButton(text="שלח מספר שלי", request_contact=True))
 
-            markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-            markup.add(types.KeyboardButton(text="שלח מספר שלי", request_contact=True))
-
-            msg = self.bot.send_message(chat_id, "מה מספר הטלפון ?", reply_markup=markup)
-            self.bot.register_next_step_handler(msg, process_phone_step)
-            update_stat(order, call.from_user)
+                msg = self.bot.send_message(chat_id, "מה מספר הטלפון ?", reply_markup=markup)
+                self.bot.register_next_step_handler(msg, process_phone_step)
+                update_stat(order, call.from_user)
+            except Exception as e:
+                self.log_error(e)
 
         # processingPhone
         def process_phone_step(message):
             try:
                 self.add_message_to_db(message)
                 chat_id = message.chat.id
-                order = self.user_dict[chat_id]
+                if chat_id in self.user_dict.keys():
+                    order = self.user_dict[chat_id]
+                else:
+                    #from old chat - no name
+                    return
                 if message.contact is None:
                     order.phone = message.text
                 else:
                     order.phone = message.contact.phone_number
                 finalize_the_order(message)
             except Exception as e:
-                self.bot.reply_to(message, 'oooops')
+                self.log_error(e)
 
         # summarizing
         def finalize_the_order(call):
-            chat_id = call.from_user.id
-            order = self.user_dict[chat_id]
-            markup = InlineKeyboardMarkup()
-            markup = self.add_reset(markup)
-            update_stat(order, call.from_user, close_record=True)
+            try:
+                chat_id = call.from_user.id
+                order = self.user_dict[chat_id]
+                markup = InlineKeyboardMarkup()
+                markup = self.add_reset(markup)
+                update_stat(order, call.from_user, close_record=True)
 
-            self.bot.send_message(chat_id,
-                                  'מגניב !' + order.name + ' היקר!  ' + '\n אנו מחכים לך ב \n' + str(
-                                      order.date) + ' ' + str(
-                                      order.hours) + ':' + str(order.minutes), reply_markup=markup)
+                self.bot.send_message(chat_id,
+                                      'מגניב !' + order.name + ' היקר!  ' + '\n אנו מחכים לך ב \n' + str(
+                                          order.date) + ' ' + str(
+                                          order.hours) + ':' + str(order.minutes), reply_markup=markup)
 
-            email_message = "New order for " + order.name + " Tel: " + order.phone + " at " + str(
-                order.date) + " " + str(
-                order.hours) + ":" + str(order.minutes)
-            # send_email(email_message)
-            if self.OWNER_ID != 0:
-                self.bot.send_message(self.OWNER_ID, email_message)
-            if self.UPDATE_CALENDAR:
-                try:
-                    set_event(order)
-                except Exception as e:
-                    print(e)
+                email_message = "New order for " + order.name + " Tel: " + order.phone + " at " + str(
+                    order.date) + " " + str(
+                    order.hours) + ":" + str(order.minutes)
+                # send_email(email_message)
+                if self.OWNER_ID != 0:
+                    self.bot.send_message(self.OWNER_ID, email_message)
+                if self.UPDATE_CALENDAR:
+                    try:
+                        set_event(order)
+                    except Exception as e:
+                        print(e)
+            except Exception as e:
+                self.log_error(e)
 
         @self.bot.callback_query_handler(func=lambda call: True)
         def callback_query(call):
+
             self.add_message_to_db(call)
             try:
                 if "cb_day" in call.data:
@@ -400,14 +430,8 @@ class Schedule_bot(Bot_base):
                     process_minutes_step(call)
                 elif "cb_restart" in call.data:
                     restart_the_flow(call)
-
-
-
-
-
-
             except Exception as e:
-                print(e)
+                self.log_error(e)
 
 
     def generate_empty_schedule(self, ):
