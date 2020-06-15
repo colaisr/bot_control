@@ -24,15 +24,15 @@ class Order:
         self.phone = "None"
 
 
-class Echo_bot(Bot_base):
+class Inherited_bot(Bot_base):
 
     def __init__(self, key,bot_ID,password="rrr", setting1="",setting2=""):
         super().__init__(key,password,bot_id=bot_ID)
         self.type="Echo bot"
         self.description="Simplest bot possible testing API testing Settings "
         self.user_dict = {}
-        self.CUSTOM_SETTING1 = setting1
-        self.CUSTOM_SETTING2 = setting2
+        self.CUSTOMPROPERTY_CUSTOM_SETTING1 = setting1
+        self.CUSTOMPROPERTY_CUSTOM_SETTING2 = setting2
 
         # Handle '/start'
         @self.bot.message_handler(commands=['start'])

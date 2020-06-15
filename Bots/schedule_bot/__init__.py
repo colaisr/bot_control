@@ -287,20 +287,20 @@ class Order:
         self.phone = "None"
 
 
-class Schedule_bot(Bot_base):
+class Inherited_bot(Bot_base):
 
     def __init__(self, key,bot_ID,password="rrr", updateBuiltInCalendar=False, start_time=8, end_time=20, interval=15,):
         super().__init__(key,password,bot_id=bot_ID)
         self.type="Scheduling bot"
         self.description="Scheduling bot to handle the que Hebrew Version"
         self.user_dict = {}
-        self.START_TIME = start_time
-        self.END_TIME = end_time
-        self.SLOT_SIZE = interval
-        self.UPDATE_CALENDAR = updateBuiltInCalendar
+        self.CUSTOMPROPERTY_START_TIME = start_time
+        self.CUSTOMPROPERTY_END_TIME = end_time
+        self.CUSTOMPROPERTY_SLOT_SIZE = interval
+        self.CUSTOMPROPERTY_UPDATE_CALENDAR = updateBuiltInCalendar
         self.CALENDAR_ID=''
 
-        if self.UPDATE_CALENDAR:
+        if self.CUSTOMPROPERTY_UPDATE_CALENDAR:
             self.CALENDAR_ID=check_calendar_exist(bot_ID)
 
         # Handle Restart
@@ -455,7 +455,7 @@ class Schedule_bot(Bot_base):
                 # send_email(email_message)
                 if self.OWNER_ID != 0:
                     self.bot.send_message(self.OWNER_ID, email_message)
-                if self.UPDATE_CALENDAR:
+                if self.CUSTOMPROPERTY_UPDATE_CALENDAR:
                     try:
                         set_event(order,self.CALENDAR_ID)
                     except Exception as e:
@@ -483,9 +483,9 @@ class Schedule_bot(Bot_base):
     def generate_empty_schedule(self, ):
         hours = {}
 
-        for h in range(self.START_TIME, self.END_TIME):
+        for h in range(self.CUSTOMPROPERTY_START_TIME, self.CUSTOMPROPERTY_END_TIME):
             slots = {}
-            for m in range(0, 60, self.SLOT_SIZE):
+            for m in range(0, 60, self.CUSTOMPROPERTY_SLOT_SIZE):
                 slots[m] = ""
             hours[h] = slots
         return hours
@@ -494,7 +494,7 @@ class Schedule_bot(Bot_base):
         now = datetime.datetime.now()
         current_hour = int(now.strftime("%H"))
         sched = self.generate_empty_schedule()
-        if self.UPDATE_CALENDAR:
+        if self.CUSTOMPROPERTY_UPDATE_CALENDAR:
             if today:
                 sched = update_schedule_for_date(sched, datetime.date.today(),self.CALENDAR_ID)
             else:
@@ -524,7 +524,7 @@ class Schedule_bot(Bot_base):
 
     def generate_minutes(self, order):
         sched = self.generate_empty_schedule()
-        if self.UPDATE_CALENDAR:
+        if self.CUSTOMPROPERTY_UPDATE_CALENDAR:
             sched = update_schedule_for_date(sched, order.date,self.CALENDAR_ID)
 
         i = 0

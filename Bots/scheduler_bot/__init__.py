@@ -242,17 +242,17 @@ class Order:
         self.phone = "None"
 
 
-class ScheduleR_bot(Bot_base):
+class Inherited_bot(Bot_base):
 
     def __init__(self, key,bot_ID,password="rrr", update=False, start_time=8, end_time=20, interval=15,):
         super().__init__(key,password,bot_id=bot_ID)
         self.type="Scheduling bot R"
         self.description="Scheduling bot to handle the que Russian Version"
         self.user_dict = {}
-        self.START_TIME = start_time
-        self.END_TIME = end_time
-        self.SLOT_SIZE = interval
-        self.UPDATE_CALENDAR = update
+        self.CUSTOMPROPERTY_START_TIME = start_time
+        self.CUSTOMPROPERTY_END_TIME = end_time
+        self.CUSTOMPROPERTY_SLOT_SIZE = interval
+        self.CUSTOMPROPERTY_UPDATE_CALENDAR = update
 
         # Handle Restart
         def restart_the_flow(call):
@@ -479,6 +479,6 @@ if __name__ == '__main__':
     last_updated_schedule = {}
     OWNER_ID = 0
 
-    bot1 = ScheduleR_bot(API_TOKEN)
+    bot1 = Inherited_bot(API_TOKEN)
 
     bot1.start()

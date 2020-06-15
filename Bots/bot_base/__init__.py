@@ -52,7 +52,8 @@ class Bot_base:
     self.bot = telebot.TeleBot(key)
     self.thread = None
     self.OWNER_ID = 0
-    self.OWNER_PASSWORD=password
+    self.CUSTOMPROPERTY_OWNER_PASSWORD=password
+    self.CUSTOMPROPERTY_API_KEY=key
 
     # Handle '/master command
     @self.bot.message_handler(commands=['master'])
@@ -70,7 +71,7 @@ class Bot_base:
         name = message.text
         user_id = message.chat.id
 
-        if message.text.lower() == self.OWNER_PASSWORD:
+        if message.text.lower() == self.CUSTOMPROPERTY_OWNER_PASSWORD:
           self.OWNER_ID = user_id
           self.bot.reply_to(message, 'Great ! Updated')
         else:

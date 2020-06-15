@@ -117,7 +117,8 @@ def create_bot():
 
     # imported bots is ready for listing and creation
 
-
+        # selected_bot='echo_bot'
+        # new_eco_bot=imported_bots[selected_bot].Inherited_bot("sda","32")
 
     form = forms.BotCreateForm()
     if request.method == 'POST':
