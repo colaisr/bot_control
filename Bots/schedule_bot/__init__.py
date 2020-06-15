@@ -19,17 +19,58 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
-CALENDAR_ID = config['Calendar']['calendar_id']
+
 BOT_SERVICE_ID = config['Calendar']['bot_sevice_id']
 SERVICE_ACCOUNT_FILE = config['Calendar']['service_credentials']
 SLOT_SIZE_MIN = int(config['Workday']['slot_size_min'])
-SCOPES = ['https://www.googleapis.com/auth/calendar.events']
+SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
 # </editor-fold>
 
 # <editor-fold desc="Calendar functions">
-def get_events_for_date(date):
+
+def check_calendar_exist(botId):
+    """
+checks if bot callendar exist if not creates
+    :param botId: id of bot
+    :return: calendar id for this bot
+    """
+    try:
+        creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        service = build('calendar', 'v3', credentials=creds)
+        calendar_summary = 'cal_for_bot_' + str(botId)
+        calendars = service.calendarList().list().execute()
+        for calendar in calendars['items']:
+            if calendar['summary'] == calendar_summary:
+                id=calendar['id']
+                return id   #found continue
+                        #not found - create
+        calendar = {
+            'summary': calendar_summary,
+            'timeZone': 'Asia/Tel_Aviv'
+        }
+        created_calendar = service.calendars().insert(body=calendar).execute()
+        id=created_calendar['id']
+        return id
+    except Exception as e:
+        print(e)
+
+
+def clear_bots_calendar(botId):
+    try:
+        creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        service = build('calendar', 'v3', credentials=creds)
+        calendar_summary = 'cal_for_bot_' + str(botId)
+        calendars = service.calendarList().list().execute()
+        for calendar in calendars['items']:
+            if calendar['summary'] == calendar_summary:
+                service.calendarList().delete(calendarId=calendar_summary).execute()
+    except Exception as e:
+        print(e)
+
+
+def get_events_for_date(date,calendar_id):
     try:
 
         creds = service_account.Credentials.from_service_account_file(
@@ -40,7 +81,7 @@ def get_events_for_date(date):
         dt = datetime.datetime.combine(date, datetime.datetime.min.time())
 
         now = dt.isoformat() + 'Z'  # 'Z' indicates UTC time
-        events_result = service.events().list(calendarId=CALENDAR_ID, timeMin=now,
+        events_result = service.events().list(calendarId=calendar_id, timeMin=now,
                                               singleEvents=True,
                                               orderBy='startTime').execute()
         events = events_result.get('items', [])
@@ -49,8 +90,9 @@ def get_events_for_date(date):
         print(e)
 
 
-def update_schedule_for_date(schedule, date):
-    events = get_events_for_date(date)
+def update_schedule_for_date(schedule, date,calendar_id):
+
+    events = get_events_for_date(date,calendar_id)
 
     for event in events:
         startF = event['start']['dateTime']
@@ -63,7 +105,7 @@ def update_schedule_for_date(schedule, date):
     return schedule
 
 
-def set_event(order):
+def set_event(order,calendar_id):
     # setting service
     creds = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
@@ -91,7 +133,7 @@ def set_event(order):
 
     }
 
-    event = service.events().insert(calendarId=CALENDAR_ID, body=event).execute()
+    event = service.events().insert(calendarId=calendar_id, body=event).execute()
 
 
 # </editor-fold>
@@ -247,7 +289,7 @@ class Order:
 
 class Schedule_bot(Bot_base):
 
-    def __init__(self, key,bot_ID,password="rrr", update=False, start_time=8, end_time=20, interval=15,):
+    def __init__(self, key,bot_ID,password="rrr", updateBuiltInCalendar=False, start_time=8, end_time=20, interval=15,):
         super().__init__(key,password,bot_id=bot_ID)
         self.type="Scheduling bot"
         self.description="Scheduling bot to handle the que Hebrew Version"
@@ -255,7 +297,11 @@ class Schedule_bot(Bot_base):
         self.START_TIME = start_time
         self.END_TIME = end_time
         self.SLOT_SIZE = interval
-        self.UPDATE_CALENDAR = update
+        self.UPDATE_CALENDAR = updateBuiltInCalendar
+        self.CALENDAR_ID=''
+
+        if self.UPDATE_CALENDAR:
+            self.CALENDAR_ID=check_calendar_exist(bot_ID)
 
         # Handle Restart
         def restart_the_flow(call):
@@ -411,7 +457,7 @@ class Schedule_bot(Bot_base):
                     self.bot.send_message(self.OWNER_ID, email_message)
                 if self.UPDATE_CALENDAR:
                     try:
-                        set_event(order)
+                        set_event(order,self.CALENDAR_ID)
                     except Exception as e:
                         print(e)
             except Exception as e:
@@ -450,10 +496,10 @@ class Schedule_bot(Bot_base):
         sched = self.generate_empty_schedule()
         if self.UPDATE_CALENDAR:
             if today:
-                sched = update_schedule_for_date(sched, datetime.date.today())
+                sched = update_schedule_for_date(sched, datetime.date.today(),self.CALENDAR_ID)
             else:
                 tmw = datetime.date.today() + datetime.timedelta(days=1)
-                sched = update_schedule_for_date(sched, tmw)
+                sched = update_schedule_for_date(sched, tmw,self.CALENDAR_ID)
 
         min_hour = 0
         if today:
@@ -479,7 +525,7 @@ class Schedule_bot(Bot_base):
     def generate_minutes(self, order):
         sched = self.generate_empty_schedule()
         if self.UPDATE_CALENDAR:
-            sched = update_schedule_for_date(sched, order.date)
+            sched = update_schedule_for_date(sched, order.date,self.CALENDAR_ID)
 
         i = 0
         buttons_row = []
