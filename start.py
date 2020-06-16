@@ -52,6 +52,9 @@ def bots_page():
     user_id = current_user.id
     user_in_db = User.query.filter(User.id == user_id).first()
     bots = user_in_db.bots
+    for x in bots:
+        if str(x.id) in ALL_RUNNING_BOTS:
+            x.is_running=True
     return render_template('lili/bots_lil.html', bots=bots)
 
 
@@ -61,20 +64,23 @@ def action():
     global ALL_RUNNING_BOTS
     bot_id = request.args.get("botId", None)
     is_start = request.args.get("isStart", 'false')
-    if is_start.lower() == 'true':
-        bot_in_db = Bot.query.filter(Bot.id == bot_id).first()
-        if bot_in_db:
-            ALL_RUNNING_BOTS[str(bot_in_db.id)] = schedule_bot.Schedule_bot(key=bot_in_db.api_key,bot_ID=bot_in_db.id, updateBuiltInCalendar=True)
-            ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
+    try:
+        if is_start.lower() == 'true':
+            bot_in_db = Bot.query.filter(Bot.id == bot_id).first()
+            if bot_in_db:
+                ALL_RUNNING_BOTS[str(bot_in_db.id)] = schedule_bot.Inherited_bot(key=bot_in_db.api_key,bot_ID=bot_in_db.id, updateBuiltInCalendar=True)
+                ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
+            else:
+                return 'Error starting #{id}'.format(id=bot_id)
         else:
-            return 'Error starting #{id}'.format(id=bot_id)
-    else:
-        if bot_id in ALL_RUNNING_BOTS:
+            if bot_id in ALL_RUNNING_BOTS:
 
-            ALL_RUNNING_BOTS[bot_id].stop()
-            del ALL_RUNNING_BOTS[bot_id]
-        else:
-            return 'Error stopping #{id}'.format(id=bot_id)
+                ALL_RUNNING_BOTS[bot_id].stop()
+                del ALL_RUNNING_BOTS[bot_id]
+            else:
+                return 'Error stopping #{id}'.format(id=bot_id)
+    except Exception as inst:
+        print("oop")
     return utils.redirect(url_for('bots_page'))
 
 

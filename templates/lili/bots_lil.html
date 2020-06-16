@@ -51,7 +51,7 @@
                                 </button>
                             </div>
                             <div class="col-sm">
-                                <input type="checkbox" class="toggle action-toggle" data-toggle="toggle"
+                                <input type="checkbox" class="toggle action-toggle" data-checked="{{ bot.is_running }}" data-toggle="toggle"
                                        data-botId="{{ bot.id }}"/>
                             </div>
                             <div class="col-sm">
@@ -101,7 +101,12 @@
 <script>
 
 $(document).ready(function () {
-
+debugger;
+  $( ".action-toggle" ).each(function( index ) {
+      if($(this).data('checked')=='True'){
+        $(this).prop('checked', true).change()
+      }
+  });
   $('.action-toggle').bootstrapToggle({
         on: 'Stop',
         off: 'Start',
