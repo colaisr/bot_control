@@ -1,19 +1,11 @@
-from __future__ import print_function
 
 import configparser
-import pathlib
+import logging
 
 from Bots.bot_base import Bot_base
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-
-import datetime
-from telebot import types
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-
-
 
 class Order:
     def __init__(self, name):
@@ -51,9 +43,10 @@ class Inherited_bot(Bot_base):
                 msg = self.bot.reply_to(message, """\
                 You told:
                 """+message.text)
+                logging.info('replied to message :'+message.text)
 
             except Exception as e:
-                print(e)
+                logging.error('problem happened:'+e[0])
 
 
 

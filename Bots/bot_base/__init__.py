@@ -10,6 +10,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, Integer, String,DateTime
 
+import logging
+
 
 
 
@@ -87,6 +89,7 @@ class Bot_base:
 Starts the bot in separate thread
     """
     try:
+      logging.info('Starting Bot Thread')
       self.thread = threading.Thread(name=self.bot.token, target=self.bot.polling)
       self.thread.start()
     except Exception as e:
@@ -96,6 +99,7 @@ Starts the bot in separate thread
     """
 Stops the bot thread
     """
+    logging.info('Stoping Bot Thread')
     self.bot.stop_bot()
 
   def add_reset(self, markup):
@@ -122,11 +126,5 @@ Add restart button to the bottom of the markup
     session.commit()
 
   def log_error(self,error):
-    problem=error.args[0]
-    naive_dt = datetime.now()
-    db_error = BotErrors(received=naive_dt,  botID=self.BOT_SYSTEM_ID,
-                             errorText=problem)
-
-    session.add(db_error)
-    session.commit()
+    logging.error(error)
 

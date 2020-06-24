@@ -1,7 +1,13 @@
 import configparser
 import datetime
-# comment
-# comment2
+
+import logging
+
+# print log in example.log instead of the console, and set the log level to DEBUG (by default, it is set to WARNING)
+logging.basicConfig(filename='example.log', filemode='w', level=logging.INFO)
+
+logging.info('Server Started')
+
 import importlib
 import os
 
@@ -16,7 +22,7 @@ from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
-from Bots import schedule_bot
+from Bots import schedule_bot, echo_bot
 from flask_user import UserMixin, UserManager, login_required, roles_required
 
 # LILI imports
@@ -68,7 +74,7 @@ def action():
         if is_start.lower() == 'true':
             bot_in_db = Bot.query.filter(Bot.id == bot_id).first()
             if bot_in_db:
-                ALL_RUNNING_BOTS[str(bot_in_db.id)] = schedule_bot.Inherited_bot(key=bot_in_db.api_key,bot_ID=bot_in_db.id, updateBuiltInCalendar=True)
+                ALL_RUNNING_BOTS[str(bot_in_db.id)] = echo_bot.Inherited_bot(key=bot_in_db.api_key,bot_ID=bot_in_db.id)
                 ALL_RUNNING_BOTS[str(bot_in_db.id)].start()
             else:
                 return 'Error starting #{id}'.format(id=bot_id)

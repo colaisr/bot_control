@@ -15,6 +15,10 @@ import telebot
 from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+import logging
+
+logging.getLogger('googleapicliet.discovery_cache').setLevel(logging.ERROR)
+
 # <editor-fold desc="Calendar imports and Vars">
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
